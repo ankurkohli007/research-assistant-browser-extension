@@ -1,0 +1,31 @@
+{
+    "name": "Research Assistant",
+    "description": "AI-powered research assistant that helps you find information quickly and efficiently",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": [
+        "activeTab",
+        "storage",
+        "sidePanel",
+        "scripting",
+        "downloads",
+        "downloads.open"
+    ],
+    "action": {
+        "default_title": "Research Assistant",
+        "default_icon": "RA.png"
+    },
+    "side_panel": {
+        "default_path": "side_panel.html"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "host_permissions": [
+        "http://localhost:8080/*",
+        "<all_urls>"
+    ],
+    "content_security_policy": {
+        "extension_pages": "script-src 'self'; object-src 'self'"
+    }
+}
