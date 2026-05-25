@@ -1,3 +1,31 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Research Assistant</title>
+    <link rel="stylesheet" href="side_panel.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Research Assistant</h2>
+        </div>
+
+        <div class="actions">
+            <button id="summarizeButton">Summarize</button>
+        </div>
+
+        <div class="bookmarks-notes">
+            <h3>Research Notes</h3>
+            <textarea id="notes" placeholder="take notes here"></textarea>
+            <button id="saveNotes">Bookmarks Notes</button>
+        </div>
+
+        <div id="results"></div>
+    </div>
+    <script src="side_panel.js"></script>
+</body>
+</html> -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -85,7 +113,7 @@
       <div class="how-arrow">→</div>
       <div class="how-step">
         <span class="how-num">2</span>
-        <span>Summarise or Ask</span>
+        <span>Summarise or Bookmark</span>
       </div>
       <div class="how-arrow">→</div>
       <div class="how-step">
@@ -110,15 +138,6 @@
       </button>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- NEW: WORD COUNT INSTRUCTION BOX -->
-    <!-- WHY? User needs to know they can specify word count in natural language -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div class="info-box">
-      <span class="info-icon">💡</span>
-      <p class="info-text">Tip: Say <strong>"Summarize in 50 words"</strong> or <strong>"100-word summary"</strong> to control length!</p>
-    </div>
-
     <!-- Result Box -->
     <div id="resultBox" class="result-box hidden" aria-live="polite" aria-label="Summary result">
       <div class="result-label">Summary</div>
@@ -131,39 +150,6 @@
           Save →
         </button>
       </div>
-    </div>
-
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- NEW: CHAT INTERFACE FOR FOLLOW-UP QUESTIONS -->
-    <!-- WHY? Users want to ask questions about the summary, like ChatGPT -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div id="chatBox" class="chat-box hidden" aria-label="Conversation with AI">
-      
-      <!-- Chat messages area -->
-      <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
-        <!-- Messages will appear here dynamically -->
-      </div>
-      
-      <!-- Chat input area -->
-      <div class="chat-input-section">
-        <input type="text" 
-               id="chatInput" 
-               class="chat-input" 
-               placeholder="Ask a follow-up question..."
-               aria-label="Ask a follow-up question">
-        <button class="chat-send-btn" id="chatSendBtn" title="Send question">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-          </svg>
-        </button>
-      </div>
-      
-      <!-- Button to save entire conversation as note -->
-      <button class="action-btn ghost full" id="saveConversationBtn"
-        aria-label="Save this entire conversation as a note">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Save Conversation
-      </button>
     </div>
 
     <!-- Divider -->
