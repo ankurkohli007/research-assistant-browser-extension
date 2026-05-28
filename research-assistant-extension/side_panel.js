@@ -3761,6 +3761,8 @@
 
 'use strict';
 
+const MAX_CHARS = 15000;
+
 // ═══════════════════════════════════════════════════════════════════
 // DATA
 // ═══════════════════════════════════════════════════════════════════
@@ -3784,104 +3786,104 @@ let currentConversation = {
 const CITATION_STYLES = {
     apa: {
         name: 'APA 7th Edition',
-        journal:    (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.journal}, ${d.volume}${d.issue ? `(${d.issue})` : ''}, ${d.pages || 'n.p.'}.`,
-        book:       (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.publisher}.`,
-        website:    (d) => `${d.authors?.[0] || 'Unknown'} (${d.year}). ${d.title}. Retrieved from ${d.url}`,
-        thesis:     (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title} [Doctoral dissertation, ${d.university}].`,
+        journal: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.journal}, ${d.volume}${d.issue ? `(${d.issue})` : ''}, ${d.pages || 'n.p.'}.`,
+        book: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.publisher}.`,
+        website: (d) => `${d.authors?.[0] || 'Unknown'} (${d.year}). ${d.title}. Retrieved from ${d.url}`,
+        thesis: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title} [Doctoral dissertation, ${d.university}].`,
         conference: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. In ${d.conference} (pp. ${d.pages || 'n.p.'}).`,
-        report:     (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.publisher}.`,
-        preprint:   (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. Retrieved from ${d.url || d.server}`,
+        report: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. ${d.publisher}.`,
+        preprint: (d) => `${d.authors?.join(', ') || 'Unknown'} (${d.year}). ${d.title}. Retrieved from ${d.url || d.server}`,
     },
     ieee: {
         name: 'IEEE',
-        journal:    (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.journal}, vol. ${d.volume}${d.issue ? `, no. ${d.issue}` : ''}, pp. ${d.pages || 'n.p.'}, ${d.year}.`,
-        book:       (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, ${d.title}. ${d.publisher}, ${d.year}.`,
-        website:    (d) => `[1] [Online]. Available: ${d.url}. [Accessed: ${new Date().toLocaleDateString()}].`,
-        thesis:     (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," Ph.D. dissertation, ${d.university}, ${d.year}.`,
+        journal: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.journal}, vol. ${d.volume}${d.issue ? `, no. ${d.issue}` : ''}, pp. ${d.pages || 'n.p.'}, ${d.year}.`,
+        book: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, ${d.title}. ${d.publisher}, ${d.year}.`,
+        website: (d) => `[1] [Online]. Available: ${d.url}. [Accessed: ${new Date().toLocaleDateString()}].`,
+        thesis: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," Ph.D. dissertation, ${d.university}, ${d.year}.`,
         conference: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," in Proc. ${d.conference}, ${d.year}, pp. ${d.pages || 'n.p.'}.`,
-        report:     (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.publisher}, ${d.year}.`,
-        preprint:   (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.server || 'Preprint'}, ${d.year}.`,
+        report: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.publisher}, ${d.year}.`,
+        preprint: (d) => `[1] ${d.authors?.[0]?.split(' ').pop() || 'Author'}, "${d.title}," ${d.server || 'Preprint'}, ${d.year}.`,
     },
     chicago: {
         name: 'Chicago/Turabian',
-        journal:    (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.journal} ${d.volume}, no. ${d.issue || '1'} (${d.year}): ${d.pages || 'n.p.'}.`,
-        book:       (d) => `${d.authors?.join(', ') || 'Unknown'}. ${d.title}. ${d.publisher}, ${d.year}.`,
-        website:    (d) => `"${d.title}." Accessed ${new Date().toLocaleDateString()}. ${d.url}.`,
-        thesis:     (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." PhD diss., ${d.university}, ${d.year}.`,
+        journal: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.journal} ${d.volume}, no. ${d.issue || '1'} (${d.year}): ${d.pages || 'n.p.'}.`,
+        book: (d) => `${d.authors?.join(', ') || 'Unknown'}. ${d.title}. ${d.publisher}, ${d.year}.`,
+        website: (d) => `"${d.title}." Accessed ${new Date().toLocaleDateString()}. ${d.url}.`,
+        thesis: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." PhD diss., ${d.university}, ${d.year}.`,
         conference: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." In ${d.conference}, ${d.year}.`,
-        report:     (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.publisher}, ${d.year}.`,
-        preprint:   (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.server || 'Preprint'}, ${d.year}.`,
+        report: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.publisher}, ${d.year}.`,
+        preprint: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.server || 'Preprint'}, ${d.year}.`,
     },
     mla: {
         name: 'MLA 9th Edition',
-        journal:    (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.journal}, vol. ${d.volume}, no. ${d.issue || '1'}, ${d.year}, pp. ${d.pages || 'n.p.'}.`,
-        book:       (d) => `${d.authors?.join(', ') || 'Unknown'}. ${d.title}. ${d.publisher}, ${d.year}.`,
-        website:    (d) => `${d.authors?.[0] || 'Unknown'}. "${d.title}." Web. Accessed ${new Date().toLocaleDateString()}.`,
-        thesis:     (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." University of ${d.university}, ${d.year}. Dissertation.`,
+        journal: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.journal}, vol. ${d.volume}, no. ${d.issue || '1'}, ${d.year}, pp. ${d.pages || 'n.p.'}.`,
+        book: (d) => `${d.authors?.join(', ') || 'Unknown'}. ${d.title}. ${d.publisher}, ${d.year}.`,
+        website: (d) => `${d.authors?.[0] || 'Unknown'}. "${d.title}." Web. Accessed ${new Date().toLocaleDateString()}.`,
+        thesis: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." University of ${d.university}, ${d.year}. Dissertation.`,
         conference: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.conference}, ${d.year}.`,
-        report:     (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.publisher}, ${d.year}.`,
-        preprint:   (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.server || 'Preprint'}, ${d.year}.`,
+        report: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.publisher}, ${d.year}.`,
+        preprint: (d) => `${d.authors?.join(', ') || 'Unknown'}. "${d.title}." ${d.server || 'Preprint'}, ${d.year}.`,
     },
     harvard: {
         name: 'Harvard',
-        journal:    (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.journal}, ${d.volume}(${d.issue || '1'}), pp.${d.pages || 'n.p.'}.`,
-        book:       (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.publisher}.`,
-        website:    (d) => `${d.authors?.[0] || 'Unknown'}, ${d.year}. ${d.title}. Available at: ${d.url}`,
-        thesis:     (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.university}.`,
+        journal: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.journal}, ${d.volume}(${d.issue || '1'}), pp.${d.pages || 'n.p.'}.`,
+        book: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.publisher}.`,
+        website: (d) => `${d.authors?.[0] || 'Unknown'}, ${d.year}. ${d.title}. Available at: ${d.url}`,
+        thesis: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.university}.`,
         conference: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. In: ${d.conference}.`,
-        report:     (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.publisher}.`,
-        preprint:   (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.server || 'Preprint'}.`,
+        report: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.publisher}.`,
+        preprint: (d) => `${d.authors?.join(', ') || 'Unknown'}, ${d.year}. ${d.title}. ${d.server || 'Preprint'}.`,
     }
 };
 
 const CITATION_FIELDS = {
     journal: [
-        { name: 'authors',  label: 'Authors (comma-separated)', type: 'text',   required: true },
-        { name: 'title',    label: 'Article Title',             type: 'text',   required: true },
-        { name: 'journal',  label: 'Journal Name',              type: 'text',   required: true },
-        { name: 'year',     label: 'Year',                      type: 'number', required: true },
-        { name: 'volume',   label: 'Volume',                    type: 'number', required: true },
-        { name: 'issue',    label: 'Issue',                     type: 'number', required: false },
-        { name: 'pages',    label: 'Pages',                     type: 'text',   required: false },
-        { name: 'doi',      label: 'DOI',                       type: 'text',   required: false },
+        { name: 'authors', label: 'Authors (comma-separated)', type: 'text', required: true },
+        { name: 'title', label: 'Article Title', type: 'text', required: true },
+        { name: 'journal', label: 'Journal Name', type: 'text', required: true },
+        { name: 'year', label: 'Year', type: 'number', required: true },
+        { name: 'volume', label: 'Volume', type: 'number', required: true },
+        { name: 'issue', label: 'Issue', type: 'number', required: false },
+        { name: 'pages', label: 'Pages', type: 'text', required: false },
+        { name: 'doi', label: 'DOI', type: 'text', required: false },
     ],
     book: [
-        { name: 'authors',   label: 'Author(s)',       type: 'text',   required: true },
-        { name: 'title',     label: 'Book Title',      type: 'text',   required: true },
-        { name: 'publisher', label: 'Publisher',       type: 'text',   required: true },
-        { name: 'year',      label: 'Year Published',  type: 'number', required: true },
+        { name: 'authors', label: 'Author(s)', type: 'text', required: true },
+        { name: 'title', label: 'Book Title', type: 'text', required: true },
+        { name: 'publisher', label: 'Publisher', type: 'text', required: true },
+        { name: 'year', label: 'Year Published', type: 'number', required: true },
     ],
     website: [
-        { name: 'authors', label: 'Website/Organization', type: 'text',   required: true },
-        { name: 'title',   label: 'Page Title',           type: 'text',   required: true },
-        { name: 'url',     label: 'URL',                  type: 'url',    required: true },
-        { name: 'year',    label: 'Year Accessed',        type: 'number', required: true },
+        { name: 'authors', label: 'Website/Organization', type: 'text', required: true },
+        { name: 'title', label: 'Page Title', type: 'text', required: true },
+        { name: 'url', label: 'URL', type: 'url', required: true },
+        { name: 'year', label: 'Year Accessed', type: 'number', required: true },
     ],
     thesis: [
-        { name: 'authors',    label: 'Author',        type: 'text',   required: true },
-        { name: 'title',      label: 'Thesis Title',  type: 'text',   required: true },
-        { name: 'university', label: 'University',    type: 'text',   required: true },
-        { name: 'year',       label: 'Year',          type: 'number', required: true },
+        { name: 'authors', label: 'Author', type: 'text', required: true },
+        { name: 'title', label: 'Thesis Title', type: 'text', required: true },
+        { name: 'university', label: 'University', type: 'text', required: true },
+        { name: 'year', label: 'Year', type: 'number', required: true },
     ],
     conference: [
-        { name: 'authors',    label: 'Author(s)',       type: 'text',   required: true },
-        { name: 'title',      label: 'Paper Title',     type: 'text',   required: true },
-        { name: 'conference', label: 'Conference Name', type: 'text',   required: true },
-        { name: 'year',       label: 'Year',            type: 'number', required: true },
-        { name: 'pages',      label: 'Pages',           type: 'text',   required: false },
+        { name: 'authors', label: 'Author(s)', type: 'text', required: true },
+        { name: 'title', label: 'Paper Title', type: 'text', required: true },
+        { name: 'conference', label: 'Conference Name', type: 'text', required: true },
+        { name: 'year', label: 'Year', type: 'number', required: true },
+        { name: 'pages', label: 'Pages', type: 'text', required: false },
     ],
     report: [
-        { name: 'authors',   label: 'Author/Organization',   type: 'text',   required: true },
-        { name: 'title',     label: 'Report Title',          type: 'text',   required: true },
-        { name: 'publisher', label: 'Publisher/Organization', type: 'text',  required: true },
-        { name: 'year',      label: 'Year',                  type: 'number', required: true },
+        { name: 'authors', label: 'Author/Organization', type: 'text', required: true },
+        { name: 'title', label: 'Report Title', type: 'text', required: true },
+        { name: 'publisher', label: 'Publisher/Organization', type: 'text', required: true },
+        { name: 'year', label: 'Year', type: 'number', required: true },
     ],
     preprint: [
-        { name: 'authors', label: 'Author(s)',                  type: 'text',   required: true },
-        { name: 'title',   label: 'Preprint Title',             type: 'text',   required: true },
-        { name: 'server',  label: 'Server (arXiv, bioRxiv…)',   type: 'text',   required: false },
-        { name: 'year',    label: 'Year',                       type: 'number', required: true },
-        { name: 'url',     label: 'URL',                        type: 'url',    required: false },
+        { name: 'authors', label: 'Author(s)', type: 'text', required: true },
+        { name: 'title', label: 'Preprint Title', type: 'text', required: true },
+        { name: 'server', label: 'Server (arXiv, bioRxiv…)', type: 'text', required: false },
+        { name: 'year', label: 'Year', type: 'number', required: true },
+        { name: 'url', label: 'URL', type: 'url', required: false },
     ]
 };
 
@@ -3903,6 +3905,7 @@ document.addEventListener('DOMContentLoaded', () => {
 function bindAllEventListeners() {
     // Main panel buttons
     document.getElementById('summarizeButton').addEventListener('click', summarizeSelection);
+    document.getElementById('summarizePageButton').addEventListener('click', summarizeFullPage);
     document.getElementById('bookmarkPageBtn').addEventListener('click', openBookmarkPageModal);
     document.getElementById('bookmarkHeadingBtn').addEventListener('click', openBookmarkHeadingModal);
     document.getElementById('citationBtn').addEventListener('click', openCitationModal);
@@ -4016,10 +4019,10 @@ function handleNoteListClick(e) {
     const id = card.dataset.id;
 
     if (e.target.closest('.note-title-btn')) { toggleExpand(id); return; }
-    if (e.target.closest('.del-btn'))         { deleteNote(id);   return; }
-    if (e.target.closest('.edit-btn'))        { editNoteTitle(id); return; }
-    if (e.target.closest('.dl-btn'))          { openNoteExportModal(id); return; }
-    if (e.target.closest('.pin-btn'))         { togglePin(id); return; }
+    if (e.target.closest('.del-btn')) { deleteNote(id); return; }
+    if (e.target.closest('.edit-btn')) { editNoteTitle(id); return; }
+    if (e.target.closest('.dl-btn')) { openNoteExportModal(id); return; }
+    if (e.target.closest('.pin-btn')) { togglePin(id); return; }
 }
 
 // ═══════════════════════════════════════════════════════════════════
@@ -4028,7 +4031,7 @@ function handleNoteListClick(e) {
 async function openBookmarkPageModal() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const modal = document.getElementById('bookmarkModal');
-    modal.dataset.url   = tab.url;
+    modal.dataset.url = tab.url;
     modal.dataset.title = tab.title;
     document.getElementById('bookmarkName').value = '';
     modal.classList.remove('hidden');
@@ -4039,14 +4042,14 @@ function closeBookmarkPageModal() {
 }
 
 async function confirmBookmark() {
-    const modal      = document.getElementById('bookmarkModal');
+    const modal = document.getElementById('bookmarkModal');
     const customName = document.getElementById('bookmarkName').value.trim();
     const bookmark = {
-        id:          'bm' + Date.now(),
-        name:        customName || modal.dataset.title,
-        url:         modal.dataset.url,
-        createdAt:   new Date().toISOString(),
-        visitCount:  0,
+        id: 'bm' + Date.now(),
+        name: customName || modal.dataset.title,
+        url: modal.dataset.url,
+        createdAt: new Date().toISOString(),
+        visitCount: 0,
         lastVisited: null
     };
     bookmarks.unshift(bookmark);
@@ -4067,7 +4070,7 @@ function deleteBookmark(id) {
 }
 
 function renderBookmarks() {
-    const list  = document.getElementById('bookmarksList');
+    const list = document.getElementById('bookmarksList');
     const count = document.getElementById('bookmarkCount');
     count.textContent = bookmarks.length;
 
@@ -4128,16 +4131,16 @@ function closeBookmarkHeadingModal() {
 }
 
 function confirmHeadingBookmark() {
-    const modal   = document.getElementById('bookmarkHeadingModal');
-    const name    = document.getElementById('headingName').value.trim();
+    const modal = document.getElementById('bookmarkHeadingModal');
+    const name = document.getElementById('headingName').value.trim();
     const pageUrl = modal.dataset.pageUrl;
 
     if (!name) { toast('⚠️ Please enter a section name'); return; }
 
     const bookmark = {
-        id:        'sec' + Date.now(),
-        name:      name,
-        pageUrl:   pageUrl,
+        id: 'sec' + Date.now(),
+        name: name,
+        pageUrl: pageUrl,
         createdAt: new Date().toISOString()
     };
     sectionBookmarks.unshift(bookmark);
@@ -4158,7 +4161,7 @@ function deleteSectionBookmark(id) {
 }
 
 function renderSectionBookmarks() {
-    const list  = document.getElementById('sectionBookmarksList');
+    const list = document.getElementById('sectionBookmarksList');
     const count = document.getElementById('sectionCount');
     count.textContent = sectionBookmarks.length;
 
@@ -4213,9 +4216,9 @@ function showCitationStep(n) {
         if (el) el.classList.toggle('active', i === n);
     });
 
-    const prevBtn      = document.getElementById('citationPrev');
-    const nextBtn      = document.getElementById('citationNext');
-    const generateBtn  = document.getElementById('generateCitation');
+    const prevBtn = document.getElementById('citationPrev');
+    const nextBtn = document.getElementById('citationNext');
+    const generateBtn = document.getElementById('generateCitation');
 
     // Back button: visible on steps 2-4
     prevBtn.style.display = (n > 1) ? '' : 'none';
@@ -4295,7 +4298,7 @@ function updateSelectedStyleDisplay() {
 function updateCitationFields() {
     const sourceType = document.getElementById('sourceType').value;
     if (!sourceType) return;
-    const fields    = CITATION_FIELDS[sourceType] || [];
+    const fields = CITATION_FIELDS[sourceType] || [];
     const container = document.getElementById('citationFields');
     container.innerHTML = fields.map(field => `
         <div class="form-group">
@@ -4322,7 +4325,7 @@ function generateCitation() {
     const data = {};
     document.querySelectorAll('#citationFields input').forEach(input => {
         const fieldName = input.dataset.field;
-        const value     = input.value.trim();
+        const value = input.value.trim();
         data[fieldName] = (fieldName === 'authors')
             ? value.split(',').map(a => a.trim()).filter(Boolean)
             : value;
@@ -4341,9 +4344,9 @@ function generateCitation() {
     const styleRadio = document.querySelector('input[name="citationStyle"]:checked');
     if (!styleRadio) { toast('⚠️ Please select a citation style'); return; }
 
-    const citationStyle    = styleRadio.value;
-    const styleGenerators  = CITATION_STYLES[citationStyle] || CITATION_STYLES.apa;
-    const generator        = styleGenerators[sourceType]    || styleGenerators.journal;
+    const citationStyle = styleRadio.value;
+    const styleGenerators = CITATION_STYLES[citationStyle] || CITATION_STYLES.apa;
+    const generator = styleGenerators[sourceType] || styleGenerators.journal;
 
     try {
         const citation = generator(data);
@@ -4366,19 +4369,19 @@ function copyCitationToClipboard() {
 function downloadCitationAsBib() {
     if (!currentCitation) { toast('⚠️ No citation to download'); return; }
     const { data, sourceType } = currentCitation;
-    const year    = data.year || new Date().getFullYear();
+    const year = data.year || new Date().getFullYear();
     const authors = data.authors || ['Unknown'];
-    const title   = data.title || 'untitled';
-    const bibtex  = `@${sourceType}{key${year},\n  author = {${authors.join(' and ')}},\n  title = {${title}},\n  year = {${year}}\n}`;
+    const title = data.title || 'untitled';
+    const bibtex = `@${sourceType}{key${year},\n  author = {${authors.join(' and ')}},\n  title = {${title}},\n  year = {${year}}\n}`;
     downloadFile(bibtex, 'citation.bib', 'text/plain');
     toast('📥 Downloading .bib…');
 }
 
 function downloadCitationAsCsv() {
     if (!currentCitation) { toast('⚠️ No citation to download'); return; }
-    const data    = currentCitation.data;
+    const data = currentCitation.data;
     const headers = Object.keys(data);
-    const values  = headers.map(h => `"${(data[h] || '').toString().replace(/"/g, '""')}"`);
+    const values = headers.map(h => `"${(data[h] || '').toString().replace(/"/g, '""')}"`);
     downloadFile(headers.join(',') + '\n' + values.join(','), 'citation.csv', 'text/csv');
     toast('📊 Downloading .csv…');
 }
@@ -4396,9 +4399,9 @@ function downloadFile(content, filename, mimeType) {
 
 function extractMetadata() {
     return {
-        title:  document.querySelector('meta[name="og:title"]')?.content || document.title,
+        title: document.querySelector('meta[name="og:title"]')?.content || document.title,
         author: document.querySelector('meta[name="author"]')?.content || '',
-        date:   document.querySelector('meta[name="article:published_time"]')?.content || ''
+        date: document.querySelector('meta[name="article:published_time"]')?.content || ''
     };
 }
 
@@ -4407,7 +4410,7 @@ function extractMetadata() {
 // ═══════════════════════════════════════════════════════════════════
 function loadBookmarks() {
     chrome.storage.local.get(['bookmarks', 'sectionBookmarks'], (result) => {
-        bookmarks        = result.bookmarks        || [];
+        bookmarks = result.bookmarks || [];
         sectionBookmarks = result.sectionBookmarks || [];
         renderBookmarks();
         renderSectionBookmarks();
@@ -4434,9 +4437,9 @@ function persistNotes() {
 // ═══════════════════════════════════════════════════════════════════
 async function summarizeSelection() {
     try {
-        const [tab]         = await chrome.tabs.query({ active: true, currentWindow: true });
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         const [{ result: sel }] = await chrome.scripting.executeScript({
-            target:   { tabId: tab.id },
+            target: { tabId: tab.id },
             function: () => window.getSelection().toString()
         });
 
@@ -4451,19 +4454,19 @@ async function summarizeSelection() {
         hideChat();
 
         currentConversation.originalSelectedText = sel.trim();
-        currentConversation.messages             = [];
-        currentConversation.isActive             = false;
+        currentConversation.messages = [];
+        currentConversation.isActive = false;
 
         const res = await fetch('http://localhost:8080/api/research/process', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({ content: sel.trim(), operation: 'summarize' })
+            body: JSON.stringify({ content: sel.trim(), operation: 'summarize' })
         });
         if (!res.ok) throw new Error('API error ' + res.status);
 
         lastSummary = (await res.text()).trim();
         currentConversation.currentSummary = lastSummary;
-        currentConversation.isActive       = true;
+        currentConversation.isActive = true;
 
         showResult(lastSummary, true);
         showSavePromptBar();
@@ -4477,6 +4480,151 @@ async function summarizeSelection() {
     }
 }
 
+async function summarizeFullPage() {
+    try {
+        const [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true
+        });
+
+        showResult('📄 Extracting full page...', false);
+        hideSavePromptBar();
+        hideChat();
+
+        // Extract full readable page text
+        const [{ result: pageContent }] = await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            function: extractFullPageContent
+        });
+
+        if (!pageContent || pageContent.length < 100) {
+            throw new Error('Could not extract enough readable content.');
+        }
+
+        // Optional protection against huge pages
+        // const MAX_CHARS = 15000;
+
+        // const trimmedContent =
+        //     pageContent.length > MAX_CHARS
+        //         ? pageContent.slice(0, MAX_CHARS)
+        //         : pageContent;
+
+        const trimmedContent = smartTrim(pageContent);
+
+
+        currentConversation.originalSelectedText = trimmedContent;
+        currentConversation.messages = [];
+        currentConversation.isActive = false;
+
+        showResult('📄 Summarizing full page...', false);
+
+        const res = await fetch('http://localhost:8080/api/research/process', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                content: trimmedContent,
+                operation: 'summarize'
+            })
+        });
+
+        if (!res.ok) {
+            throw new Error('API error ' + res.status);
+        }
+
+        lastSummary = (await res.text()).trim();
+
+        currentConversation.currentSummary = lastSummary;
+        currentConversation.isActive = true;
+
+        showResult(lastSummary, true);
+
+        showSavePromptBar();
+        showChat();
+
+        toast('✅ Full page summary ready!');
+
+    } catch (err) {
+        showResult('❌ ' + err.message, false);
+        hideSavePromptBar();
+        hideChat();
+    }
+}
+
+// function extractFullPageContent() {
+
+//     // Clone the document body
+//     const clonedBody = document.body.cloneNode(true);
+
+//     // Remove unwanted elements ONLY from clone
+//     const unwanted = clonedBody.querySelectorAll(
+//         'script, style, noscript, iframe, nav, footer, header, aside'
+//     );
+
+//     unwanted.forEach(el => el.remove());
+
+//     // Prefer article/main content
+//     const article =
+//         clonedBody.querySelector('article') ||
+//         clonedBody.querySelector('main') ||
+//         clonedBody;
+
+//     let text = article.innerText || article.textContent || '';
+
+//     // Clean text
+//     text = text
+//         .replace(/\s+/g, ' ')
+//         .replace(/\n+/g, '\n')
+//         .trim();
+
+//     return text;
+// }
+
+function extractFullPageContent() {
+
+    // Prefer article/main content directly
+    const article =
+        document.querySelector('article') ||
+        document.querySelector('main') ||
+        document.body;
+
+    // Create clean text WITHOUT modifying page
+    let text = article.innerText || article.textContent || '';
+
+    // Cleanup
+    text = text
+        .replace(/\s+/g, ' ')
+        .replace(/\n+/g, '\n')
+        .trim();
+
+    return text;
+
+}
+
+function smartTrim(text, limit = MAX_CHARS) {
+
+    if (text.length <= limit) {
+        return text;
+    }
+
+    const trimmed = text.slice(0, limit);
+
+    const lastSentence = Math.max(
+        trimmed.lastIndexOf('.'),
+        trimmed.lastIndexOf('!'),
+        trimmed.lastIndexOf('?')
+    );
+
+    // Avoid cutting too early
+    if (lastSentence > limit * 0.7) {
+        return trimmed.slice(0, lastSentence + 1);
+    }
+
+    return trimmed;
+}
+
+
 function saveSummaryAsNote() {
     if (!lastSummary) return;
     saveNote({ title: autoTitle(lastSummary), content: lastSummary, type: 'summary' });
@@ -4485,7 +4633,7 @@ function saveSummaryAsNote() {
 }
 
 function saveManualNote() {
-    const el   = document.getElementById('quickNoteInput');
+    const el = document.getElementById('quickNoteInput');
     const text = el.value.trim();
     if (!text) { toast('⚠️ Type a note first.'); return; }
     saveNote({ title: autoTitle(text), content: text, type: 'manual' });
@@ -4495,9 +4643,9 @@ function saveManualNote() {
 
 async function sendFollowUpQuestion() {
     const chatInput = document.getElementById('chatInput');
-    const question  = chatInput.value.trim();
-    if (!question)                       { toast('⚠️ Type a question!');       return; }
-    if (!currentConversation.isActive)   { toast('⚠️ Get a summary first!');   return; }
+    const question = chatInput.value.trim();
+    if (!question) { toast('⚠️ Type a question!'); return; }
+    if (!currentConversation.isActive) { toast('⚠️ Get a summary first!'); return; }
 
     addMessageToChat('user', question);
     currentConversation.messages.push({ role: 'user', content: question });
@@ -4506,12 +4654,12 @@ async function sendFollowUpQuestion() {
 
     try {
         const res = await fetch('http://localhost:8080/api/research/process', {
-            method:  'POST',
+            method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body:    JSON.stringify({
-                operation:           'followup',
-                question:            question,
-                content:             currentConversation.currentSummary,
+            body: JSON.stringify({
+                operation: 'followup',
+                question: question,
+                content: currentConversation.currentSummary,
                 originalSelectedText: currentConversation.originalSelectedText,
                 conversationHistory: currentConversation.messages.slice(0, -1)
             })
@@ -4544,12 +4692,12 @@ function saveConversationAsNote() {
 // ═══════════════════════════════════════════════════════════════════
 function saveNote({ title, content, type }) {
     const note = {
-        id:        'n' + Date.now(),
-        title:     title   || 'Untitled',
-        content:   content || '',
-        type:      type    || 'manual',
-        pinned:    false,
-        expanded:  false,
+        id: 'n' + Date.now(),
+        title: title || 'Untitled',
+        content: content || '',
+        type: type || 'manual',
+        pinned: false,
+        expanded: false,
         createdAt: new Date().toISOString()
     };
     notes.unshift(note);
@@ -4606,7 +4754,7 @@ function getSorted() {
 }
 
 function renderNotes() {
-    const list    = document.getElementById('notesList');
+    const list = document.getElementById('notesList');
     const countEl = document.getElementById('noteCount');
     countEl.textContent = notes.length;
 
@@ -4619,17 +4767,17 @@ function renderNotes() {
 }
 
 function buildCardHTML(note) {
-    const safeTitle   = escHTML(note.title);
+    const safeTitle = escHTML(note.title);
     const safePreview = escHTML(truncate(note.content, 120));
     // FIX: note content set inline in the expand div (no deferred MutationObserver)
     const safeContent = escHTML(note.content);
-    const date        = formatDate(note.createdAt);
-    const badgeLabel  = { summary: 'Summary', bookmark: 'Bookmark', manual: 'Note', conversation: 'Conversation' }[note.type] || 'Note';
-    const expandOpen  = note.expanded ? 'open' : '';
-    const chevRot     = note.expanded ? 'style="transform:rotate(180deg)"' : '';
+    const date = formatDate(note.createdAt);
+    const badgeLabel = { summary: 'Summary', bookmark: 'Bookmark', manual: 'Note', conversation: 'Conversation' }[note.type] || 'Note';
+    const expandOpen = note.expanded ? 'open' : '';
+    const chevRot = note.expanded ? 'style="transform:rotate(180deg)"' : '';
     // FIX: pin-on class is actually applied based on note.pinned
-    const pinClass    = note.pinned ? 'card-icon-btn pin-btn pin-on' : 'card-icon-btn pin-btn';
-    const pinTitle    = note.pinned ? 'Unpin' : 'Pin';
+    const pinClass = note.pinned ? 'card-icon-btn pin-btn pin-on' : 'card-icon-btn pin-btn';
+    const pinTitle = note.pinned ? 'Unpin' : 'Pin';
 
     return `
        <div class="note-card ${note.pinned ? 'is-pinned' : ''}" data-id="${note.id}" role="listitem">
@@ -4667,13 +4815,13 @@ function hideChat() { document.getElementById('chatBox').classList.add('hidden')
 
 function addMessageToChat(role, content) {
     const chatMessages = document.getElementById('chatMessages');
-    const messageEl    = document.createElement('div');
+    const messageEl = document.createElement('div');
     messageEl.className = `chat-message ${role}`;
-    const badgeEl  = document.createElement('span');
-    badgeEl.className   = `chat-badge badge-${role}`;
+    const badgeEl = document.createElement('span');
+    badgeEl.className = `chat-badge badge-${role}`;
     badgeEl.textContent = role === 'user' ? 'You' : 'Assistant';
-    const bubbleEl  = document.createElement('div');
-    bubbleEl.className   = 'chat-bubble';
+    const bubbleEl = document.createElement('div');
+    bubbleEl.className = 'chat-bubble';
     bubbleEl.textContent = content;
     messageEl.appendChild(badgeEl);
     messageEl.appendChild(bubbleEl);
@@ -4695,10 +4843,10 @@ function scrollChatToBottom() {
 // RESULT BOX HELPERS
 // ═══════════════════════════════════════════════════════════════════
 function showResult(text, isPlain) {
-    const box     = document.getElementById('resultBox');
+    const box = document.getElementById('resultBox');
     const content = document.getElementById('resultContent');
     if (isPlain) content.textContent = text;
-    else         content.innerHTML   = text;
+    else content.innerHTML = text;
     box.classList.remove('hidden');
 }
 
@@ -4720,15 +4868,15 @@ function closeExportModal() {
 function exportNotes(format) {
     closeExportModal();
     if (format === 'html') exportAsHTML();
-    else                   exportAsDoc();
+    else exportAsDoc();
 }
 
 function exportAsHTML() {
     const sorted = getSorted();
-    const rows   = sorted.map(n => {
-        const date       = formatDate(n.createdAt);
-        const safeTitle  = escHTML(n.title);
-        const safeContent= escHTML(n.content).replace(/\n/g, '<br>');
+    const rows = sorted.map(n => {
+        const date = formatDate(n.createdAt);
+        const safeTitle = escHTML(n.title);
+        const safeContent = escHTML(n.content).replace(/\n/g, '<br>');
         const badgeLabel = { summary: 'Summary', bookmark: 'Bookmark', manual: 'Note', conversation: 'Conversation' }[n.type] || 'Note';
         return `<div class="note">
   <div class="note-head"><span class="badge badge-${n.type}">${badgeLabel}</span>${n.pinned ? '<span class="pin">📌 Pinned</span>' : ''}<span class="date">${date}</span></div>
@@ -4747,7 +4895,7 @@ function exportAsHTML() {
 
 function exportAsDoc() {
     const sorted = getSorted();
-    const lines  = ['RESEARCH NOTES EXPORT', '='.repeat(50), 'Exported: ' + new Date().toLocaleString(), ''];
+    const lines = ['RESEARCH NOTES EXPORT', '='.repeat(50), 'Exported: ' + new Date().toLocaleString(), ''];
     sorted.forEach((n, i) => {
         const label = { summary: 'Summary', bookmark: 'Bookmark', manual: 'Note', conversation: 'Conversation' }[n.type] || 'Note';
         lines.push(`--- Note ${i + 1} [${label}] ---`, n.title, '', n.content, '');
@@ -4774,11 +4922,11 @@ function exportSingleNote(id, format) {
     const note = notes.find(n => n.id === id);
     if (!note) return;
     if (format === 'html') exportSingleNoteAsHTML(note);
-    else                   exportSingleNoteAsDoc(note);
+    else exportSingleNoteAsDoc(note);
 }
 
 function exportSingleNoteAsHTML(note) {
-    const safeTitle   = escHTML(note.title);
+    const safeTitle = escHTML(note.title);
     const safeContent = escHTML(note.content).replace(/\n/g, '<br>');
     const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>${safeTitle}</title>
 <style>body{font-family:'Segoe UI',sans-serif;padding:40px;max-width:680px;margin:auto}h1{font-size:20px;margin-bottom:18px}p{font-size:13px;line-height:1.8;white-space:pre-wrap}</style>
@@ -4790,7 +4938,7 @@ function exportSingleNoteAsHTML(note) {
 
 function exportSingleNoteAsDoc(note) {
     const lines = [note.title, '='.repeat(40), '', note.content];
-    const slug  = note.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40);
+    const slug = note.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').slice(0, 40);
     downloadFile(lines.join('\n'), `note-${slug}.txt`, 'text/plain');
     toast('📝 Downloading note…');
 }
@@ -4859,11 +5007,11 @@ function positionTooltip(tip, target) {
     const rect = target.getBoundingClientRect();
     const tipW = 200;
     let left = rect.left + rect.width / 2 - tipW / 2;
-    let top  = rect.top - 36;
+    let top = rect.top - 36;
     if (left < 6) left = 6;
     if (left + tipW > window.innerWidth - 6) left = window.innerWidth - tipW - 6;
     if (top < 6) top = rect.bottom + 6;
-    tip.style.left  = left + 'px';
-    tip.style.top   = top  + 'px';
+    tip.style.left = left + 'px';
+    tip.style.top = top + 'px';
     tip.style.width = tipW + 'px';
 }

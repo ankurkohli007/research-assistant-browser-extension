@@ -20,6 +20,12 @@ public class ResearchRequest {
     private String content;           // The text to summarize
     private String operation;         // "summarize", "followup", "search", etc.
 
+    // NEW FIELD: What type of content is being summarized?
+    private String contentType; // "selected" or "fullpage"
+
+    // NEW FIELD: Full webpage URL
+    private String pageUrl;
+
     // NEW FIELDS FOR WORD COUNT FEATURE
     private Integer wordLimit;        // e.g., 50, 100, 200 words max
     // WHY? When user says "summarize in 50 words", we extract the number and store it here
