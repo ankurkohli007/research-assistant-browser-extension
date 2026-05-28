@@ -1,18 +1,20 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Research Assistant</title>
   <link rel="stylesheet" href="side_panel.css">
 </head>
 <body>
 
-  <!-- ── EXPORT MODAL ─────────────────────────────── -->
   <div id="exportModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Export Notes">
     <div class="modal-box">
       <div class="modal-header">
-        <span class="modal-icon">⬇️</span>
-        <h3>Export Notes</h3>
+        <div class="modal-title-group">
+          <span class="modal-icon">⬇️</span>
+          <h3>Export Notes</h3>
+        </div>
         <button class="modal-close" id="closeExport" title="Close" aria-label="Close export dialog">✕</button>
       </div>
       <p class="modal-desc">Choose a format to download all your saved notes.</p>
@@ -20,23 +22,24 @@
         <button class="export-btn" id="exportHTML" data-tooltip="Download as HTML document">
           <span class="export-icon">📄</span>
           <span class="export-label">HTML</span>
-          <span class="export-sub">Best for editing, reading & sharing</span>
+          <span class="export-sub">Editing & sharing</span>
         </button>
         <button class="export-btn" id="exportDoc" data-tooltip="Download as plain text file">
           <span class="export-icon">📝</span>
           <span class="export-label">DOC / TXT</span>
-          <span class="export-sub">Best for editing & sharing</span>
+          <span class="export-sub">Plain text format</span>
         </button>
       </div>
     </div>
   </div>
 
-  <!-- ── PER-NOTE EXPORT MODAL ───────────────────── -->
   <div id="noteExportModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Export Note">
     <div class="modal-box">
       <div class="modal-header">
-        <span class="modal-icon">⬇️</span>
-        <h3>Export Note</h3>
+        <div class="modal-title-group">
+          <span class="modal-icon">⬇️</span>
+          <h3>Export Note</h3>
+        </div>
         <button class="modal-close" id="closeNoteExport" title="Close" aria-label="Close">✕</button>
       </div>
       <p class="modal-desc">
@@ -57,139 +60,427 @@
     </div>
   </div>
 
-  <!-- ── MAIN PANEL ───────────────────────────────── -->
   <div class="panel">
 
-    <!-- Header -->
     <header class="panel-header">
       <div class="header-brand">
-        <div class="brand-icon" aria-hidden="true">⚗</div>
+        <div class="brand-icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+        </div>
         <div>
           <h1>Research Assistant</h1>
           <p class="header-sub">Summarise · Save · Organise</p>
         </div>
       </div>
-      <button class="icon-action" id="exportBtn"
-        data-tooltip="Export all notes to HTML or DOC"
-        aria-label="Export notes">
+      <button class="icon-action" id="exportBtn" data-tooltip="Export all notes to HTML or DOC" aria-label="Export notes">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       </button>
     </header>
 
-    <!-- How it works strip -->
+    <div class="panel-content">
+      
+      <div class="how-strip">
+        <div class="how-step"><span class="how-num">1</span> Select text</div>
+        <div class="how-arrow">→</div>
+        <div class="how-step"><span class="how-num">2</span> Summarise</div>
+        <div class="how-arrow">→</div>
+        <div class="how-step"><span class="how-num">3</span> Save Note</div>
+      </div>
+
+      <section class="actions-section" aria-label="Main actions">
+        <button class="action-btn primary" id="summarizeButton" data-tooltip="Select text on the page, then click — AI will summarise it and show the result here" aria-label="Summarise selected text">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Summarise Selection
+        </button>
+        <button class="action-btn secondary" id="bookmarkButton" data-tooltip="Summarises selected text (or saves the page URL) directly to your notes" aria-label="Bookmark this page or selection">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+          Bookmark This Page
+        </button>
+      </section>
+
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <p class="info-text">Tip <strong>"Summarize in 50 words"</strong> or <strong>"100-word summary"</strong> to control length!</p>
+      </div>
+
+      <div id="resultBox" class="result-box hidden" aria-live="polite" aria-label="Summary result">
+        <div class="result-header">
+          <div class="result-label">Summary</div>
+        </div>
+        <div id="resultContent" class="result-content"></div>
+        <div id="savePromptBar" class="save-prompt-bar hidden">
+          <span>Save this to your notes?</span>
+          <button class="save-now-btn" id="saveSummaryBtn" data-tooltip="Save the summary shown above to your notes list" aria-label="Save summary to notes">
+            Save Note
+          </button>
+        </div>
+      </div>
+
+      <div id="chatBox" class="chat-box hidden" aria-label="Conversation with AI">
+        <div class="chat-header">
+          <span class="chat-header-title">Ask Follow-up</span>
+        </div>
+        <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
+          </div>
+        <div class="chat-input-section">
+          <input type="text" id="chatInput" class="chat-input" placeholder="Ask a follow-up question..." aria-label="Ask a follow-up question">
+          <button class="chat-send-btn" id="chatSendBtn" title="Send question">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+        <button class="action-btn ghost full" id="saveConversationBtn" aria-label="Save this entire conversation as a note">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Conversation
+        </button>
+      </div>
+
+      <div class="section-divider">
+        <span>Quick Note</span>
+      </div>
+
+      <section class="quick-note-section" aria-label="Quick note">
+        <div class="textarea-wrapper">
+          <textarea id="quickNoteInput" placeholder="Type or paste a note here…" rows="3" aria-label="Quick note text"></textarea>
+          <button class="action-btn secondary full save-manual-btn" id="saveManualNote" data-tooltip="Save whatever you've typed above as a note" aria-label="Save typed note">
+            Save Note
+          </button>
+        </div>
+      </section>
+
+      <section class="notes-section" aria-label="Saved notes">
+        <div class="notes-header">
+          <h2 class="notes-title">Saved Notes</h2>
+          <span class="notes-badge" id="noteCount" aria-label="Note count">0</span>
+        </div>
+        <div id="notesList" class="notes-list" role="list">
+           </div>
+      </section>
+
+    </div>
+  </div>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true"></div>
+
+  <script src="side_panel.js"></script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Research Assistant Pro</title>
+  <link rel="stylesheet" href="side_panel.css">
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- BOOKMARK PAGE MODAL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div id="bookmarkModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Bookmark Page">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-icon">🔖</span>
+        <h3>Bookmark Page</h3>
+        <button class="modal-close" id="closeBookmarkModal" title="Close" aria-label="Close">✕</button>
+      </div>
+      <p class="modal-desc">Save this page for quick access.</p>
+      <div class="form-group">
+        <label for="bookmarkName">Custom name (optional):</label>
+        <input type="text" id="bookmarkName" class="form-input" placeholder="Leave empty to use page title">
+      </div>
+      <div class="modal-actions">
+        <button class="action-btn primary" id="confirmBookmark">Save Bookmark</button>
+        <button class="action-btn secondary" id="cancelBookmark">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- BOOKMARK HEADING MODAL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div id="bookmarkHeadingModal" class="modal-backdrop hidden" role="dialog" aria-modal="true"
+    aria-label="Bookmark Heading">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-icon">📌</span>
+        <h3>Bookmark Section</h3>
+        <button class="modal-close" id="closeHeadingModal" title="Close" aria-label="Close">✕</button>
+      </div>
+      <p class="modal-desc">Save this section heading.</p>
+      <div class="form-group">
+        <label for="headingName">Section name:</label>
+        <input type="text" id="headingName" class="form-input" placeholder="Enter section name">
+      </div>
+      <div class="modal-actions">
+        <button class="action-btn primary" id="confirmHeadingBookmark">Save Section</button>
+        <button class="action-btn secondary" id="cancelHeadingBookmark">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- CITATION GENERATOR MODAL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div id="citationModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Generate Citation">
+    <div class="modal-box modal-lg">
+      <div class="modal-header">
+        <span class="modal-icon">📚</span>
+        <h3>Generate Citation</h3>
+        <button class="modal-close" id="closeCitationModal" title="Close" aria-label="Close">✕</button>
+      </div>
+
+      <div class="citation-form">
+
+        <!-- STEP 1: Source Type Selection -->
+        <div class="citation-step active" id="citationStep1">
+          <div class="step-header">
+            <span class="step-badge">Step 1</span>
+            <h4>Select Source Type</h4>
+          </div>
+          <p class="step-description">What type of source are you citing?</p>
+          <div class="form-group">
+            <label for="sourceType">Source type *</label>
+            <select id="sourceType" class="form-input">
+              <option value="">-- Choose a source type --</option>
+              <option value="journal">📄 Journal Article</option>
+              <option value="book">📕 Book</option>
+              <option value="website">🌐 Website</option>
+              <option value="thesis">🎓 Thesis/Dissertation</option>
+              <option value="conference">🎤 Conference Paper</option>
+              <option value="report">📋 Report</option>
+              <option value="preprint">🔬 Preprint/Grey Literature</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- STEP 2: Fill Information -->
+        <div class="citation-step" id="citationStep2">
+          <div class="step-header">
+            <span class="step-badge">Step 2</span>
+            <h4>Fill in Source Information</h4>
+          </div>
+          <p class="step-description">Complete the fields below. Fields marked with * are required.</p>
+          <div id="citationFields" class="citation-fields"></div>
+        </div>
+
+        <!-- STEP 3: Choose Citation Style -->
+        <div class="citation-step" id="citationStep3">
+          <div class="step-header">
+            <span class="step-badge">Step 3</span>
+            <h4>Choose Citation Style</h4>
+          </div>
+          <p class="step-description">Pick your citation format. Click to select.</p>
+          <div class="style-search-container">
+            <input type="text" id="styleSearch" class="form-input"
+              placeholder="Search style (type 'APA', 'IEEE', etc.)">
+          </div>
+          <div class="citation-styles-grid" id="citationStylesGrid"></div>
+          <div class="selected-style-display hidden" id="selectedStyleDisplay">
+            <p class="selected-style-label">✅ You selected:</p>
+            <p class="selected-style-name" id="selectedStyleName"></p>
+          </div>
+        </div>
+
+        <!-- STEP 4: Preview & Export -->
+        <div class="citation-step" id="citationStep4">
+          <div class="step-header">
+            <span class="step-badge">Step 4</span>
+            <h4>Your Citation</h4>
+          </div>
+          <p class="step-description">Here's your generated citation. Choose how you want to use it!</p>
+          <div class="citation-preview-box">
+            <p class="preview-label">Citation Preview:</p>
+            <div class="citation-preview" id="citationPreview"></div>
+          </div>
+          <div class="export-options-citation">
+            <button class="export-btn-citation" id="copyCitation" title="Copy to clipboard">
+              📋 Copy to Clipboard
+            </button>
+            <button class="export-btn-citation" id="downloadBib" title="Download as BibTeX">
+              📥 Download .bib
+            </button>
+            <button class="export-btn-citation" id="downloadCsv" title="Download as CSV">
+              📊 Download .csv
+            </button>
+            <button class="export-btn-citation" id="downloadTxt" title="Download as TXT">
+              📄 Download .txt
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Citation step navigation -->
+      <div class="citation-nav" id="citationNav">
+        <button class="action-btn secondary" id="citationPrev" style="display:none">← Back</button>
+        <button class="action-btn primary" id="citationNext">Next →</button>
+        <button class="action-btn primary hidden" id="generateCitation">Generate Citation</button>
+      </div>
+
+      <div class="modal-actions">
+        <button class="action-btn secondary" id="cancelCitation">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- MAIN PANEL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div class="panel">
+
+    <header class="panel-header">
+      <div class="header-brand">
+        <div class="brand-icon" aria-hidden="true">⚗</div>
+        <div>
+          <h1>Research Assistant Pro</h1>
+          <p class="header-sub">Summarise · Cite · Bookmark · Organise</p>
+        </div>
+      </div>
+      <button class="icon-action" id="exportBtn" data-tooltip="Export all notes" aria-label="Export notes">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+      </button>
+    </header>
+
     <div class="how-strip">
       <div class="how-step">
         <span class="how-num">1</span>
-        <span>Select text on page</span>
+        <span>Select text</span>
       </div>
       <div class="how-arrow">→</div>
       <div class="how-step">
         <span class="how-num">2</span>
-        <span>Summarise or Ask</span>
+        <span>Summarise & Cite</span>
       </div>
       <div class="how-arrow">→</div>
       <div class="how-step">
         <span class="how-num">3</span>
-        <span>Notes saved below</span>
+        <span>Bookmark & Save</span>
       </div>
     </div>
 
-    <!-- Action Buttons -->
     <section class="actions-section" aria-label="Main actions">
       <button class="action-btn primary" id="summarizeButton"
-        data-tooltip="Select text on the page, then click — AI will summarise it and show the result here"
-        aria-label="Summarise selected text">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        data-tooltip="Select text on the page, then click to summarise" aria-label="Summarise selected text">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+          <polyline points="14 2 14 8 20 8" />
+          <line x1="16" y1="13" x2="8" y2="13" />
+          <line x1="16" y1="17" x2="8" y2="17" />
+          <polyline points="10 9 9 9 8 9" />
+        </svg>
         Summarise Selection
       </button>
-      <button class="action-btn secondary" id="bookmarkButton"
-        data-tooltip="Summarises selected text (or saves the page URL) directly to your notes — no extra steps"
-        aria-label="Bookmark this page or selection">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        Bookmark This Page
+
+      <button class="action-btn secondary" id="bookmarkPageBtn"
+        data-tooltip="Bookmark this entire page for quick access" aria-label="Bookmark this page">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+        </svg>
+        Bookmark Page
+      </button>
+
+      <button class="action-btn secondary" id="bookmarkHeadingBtn"
+        data-tooltip="Bookmark a specific section heading on this page" aria-label="Bookmark section heading">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20" />
+        </svg>
+        Bookmark Section
+      </button>
+
+      <button class="action-btn secondary" id="citationBtn" data-tooltip="Generate a citation for this article"
+        aria-label="Generate citation">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 12.5A2.5 2.5 0 0 1 6.5 10H20" />
+        </svg>
+        Generate Citation
       </button>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- NEW: WORD COUNT INSTRUCTION BOX -->
-    <!-- WHY? User needs to know they can specify word count in natural language -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
     <div class="info-box">
       <span class="info-icon">💡</span>
-      <p class="info-text">Tip: Say <strong>"Summarize in 50 words"</strong> or <strong>"100-word summary"</strong> to control length!</p>
+      <p class="info-text">Pro tips: Say <strong>"Summarize in 50 words"</strong> • Bookmark pages for quick access •
+        Generate citations in multiple formats!</p>
     </div>
 
-    <!-- Result Box -->
     <div id="resultBox" class="result-box hidden" aria-live="polite" aria-label="Summary result">
       <div class="result-label">Summary</div>
       <div id="resultContent" class="result-content"></div>
       <div id="savePromptBar" class="save-prompt-bar hidden">
         <span>Save this summary to your notes?</span>
-        <button class="save-now-btn" id="saveSummaryBtn"
-          data-tooltip="Save the summary shown above to your notes list"
-          aria-label="Save summary to notes">
-          Save →
-        </button>
+        <button class="save-now-btn" id="saveSummaryBtn" aria-label="Save summary">Save →</button>
       </div>
     </div>
 
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <!-- NEW: CHAT INTERFACE FOR FOLLOW-UP QUESTIONS -->
-    <!-- WHY? Users want to ask questions about the summary, like ChatGPT -->
-    <!-- ═══════════════════════════════════════════════════════════════ -->
-    <div id="chatBox" class="chat-box hidden" aria-label="Conversation with AI">
-      
-      <!-- Chat messages area -->
-      <div id="chatMessages" class="chat-messages" role="log" aria-live="polite">
-        <!-- Messages will appear here dynamically -->
-      </div>
-      
-      <!-- Chat input area -->
+    <div id="chatBox" class="chat-box hidden" aria-label="Conversation">
+      <div id="chatMessages" class="chat-messages" role="log"></div>
       <div class="chat-input-section">
-        <input type="text" 
-               id="chatInput" 
-               class="chat-input" 
-               placeholder="Ask a follow-up question..."
-               aria-label="Ask a follow-up question">
-        <button class="chat-send-btn" id="chatSendBtn" title="Send question">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        <input type="text" id="chatInput" class="chat-input" placeholder="Ask a follow-up question..."
+          aria-label="Ask question">
+        <button class="chat-send-btn" id="chatSendBtn" title="Send">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
           </svg>
         </button>
       </div>
-      
-      <!-- Button to save entire conversation as note -->
-      <button class="action-btn ghost full" id="saveConversationBtn"
-        aria-label="Save this entire conversation as a note">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <button class="action-btn ghost full" id="saveConversationBtn" aria-label="Save conversation">
         Save Conversation
       </button>
     </div>
 
-    <!-- Divider -->
+    <section class="bookmarks-section" aria-label="Bookmarked pages">
+      <div class="section-header">
+        <h2 class="section-title">🔖 Bookmarked Pages</h2>
+        <span class="section-badge" id="bookmarkCount">0</span>
+      </div>
+      <div id="bookmarksList" class="bookmarks-list" role="list"></div>
+    </section>
+
+    <section class="bookmarks-section" aria-label="Bookmarked sections">
+      <div class="section-header">
+        <h2 class="section-title">📌 Bookmarked Sections</h2>
+        <span class="section-badge" id="sectionCount">0</span>
+      </div>
+      <div id="sectionBookmarksList" class="bookmarks-list" role="list"></div>
+    </section>
+
     <div class="section-divider">
       <span>or write a quick note</span>
     </div>
 
-    <!-- Manual Note -->
     <section class="quick-note-section" aria-label="Quick note">
-      <textarea id="quickNoteInput"
-        placeholder="Type or paste a note here…"
-        rows="3"
+      <textarea id="quickNoteInput" placeholder="Type or paste a note here…" rows="3"
         aria-label="Quick note text"></textarea>
-      <button class="action-btn ghost full" id="saveManualNote"
-        data-tooltip="Save whatever you've typed above as a note"
-        aria-label="Save typed note">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      <button class="action-btn ghost full" id="saveManualNote" aria-label="Save note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+          <polyline points="17 21 17 13 7 13 7 21" />
+          <polyline points="7 3 7 8 15 8" />
+        </svg>
         Save Note
       </button>
     </section>
 
-    <!-- Notes List -->
     <section class="notes-section" aria-label="Saved notes">
       <div class="notes-header">
         <h2 class="notes-title">Saved Notes</h2>
-        <span class="notes-badge" id="noteCount" aria-label="Note count">0</span>
+        <span class="notes-badge" id="noteCount">0</span>
       </div>
       <div id="notesList" class="notes-list" role="list"></div>
     </section>
@@ -202,6 +493,46 @@
   <!-- Tooltip -->
   <div id="tooltip" class="tooltip" role="tooltip" aria-hidden="true"></div>
 
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- EXPORT MODAL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div id="exportModal" class="modal-backdrop hidden" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-icon">📤</span>
+        <h3>Export Notes</h3>
+        <!-- FIX: was using inline onclick — now uses id so JS can bind it -->
+        <button class="modal-close" id="closeExportModal" aria-label="Close">✕</button>
+      </div>
+      <p class="modal-desc">Choose export format</p>
+      <div class="modal-actions" style="flex-direction: column; gap: 10px;">
+        <button class="action-btn primary" id="exportHTML">📄 Export as HTML</button>
+        <button class="action-btn secondary" id="exportDoc">📝 Export as TXT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <!-- SINGLE NOTE EXPORT MODAL -->
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <div id="noteExportModal" class="modal-backdrop hidden" role="dialog">
+    <div class="modal-box">
+      <div class="modal-header">
+        <span class="modal-icon">📄</span>
+        <h3 id="noteExportTitle">Export Note</h3>
+        <!-- FIX: was using inline onclick — now uses id so JS can bind it -->
+        <button class="modal-close" id="closeNoteExportModal" aria-label="Close">✕</button>
+      </div>
+      <p class="modal-desc">Export this note</p>
+      <div class="modal-actions" style="flex-direction: column; gap: 10px;">
+        <!-- FIX: was using inline onclick — now uses ids so JS can bind them -->
+        <button class="action-btn primary" id="noteExportHTML">📄 Export as HTML</button>
+        <button class="action-btn secondary" id="noteExportDoc">📝 Export as TXT</button>
+      </div>
+    </div>
+  </div>
+
   <script src="side_panel.js"></script>
 </body>
+
 </html>

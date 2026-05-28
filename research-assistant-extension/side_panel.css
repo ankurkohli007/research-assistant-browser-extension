@@ -138,10 +138,7 @@ body {
   font-size: 11px;
 }
 
-/* ═══════════════════════════════════════════════════ */
-/* NEW: INFO BOX STYLING */
-/* WHY? Display helpful tips to users about word count feature */
-/* ═══════════════════════════════════════════════════ */
+/* ── Info box ─────────────────────────────────── */
 .info-box {
   display: flex;
   align-items: flex-start;
@@ -169,11 +166,13 @@ body {
 /* ── Sections ───────────────────────────────────── */
 .actions-section,
 .quick-note-section,
-.notes-section {
+.notes-section,
+.bookmarks-section {
   padding: 12px 14px;
 }
 .actions-section { border-bottom: 1px solid var(--border-soft); }
 .quick-note-section { border-bottom: 1px solid var(--border-soft); }
+.bookmarks-section { border-bottom: 1px solid var(--border-soft); }
 
 /* ── Action Buttons ─────────────────────────────── */
 .action-btn {
@@ -189,7 +188,7 @@ body {
   font-weight: 600;
   font-family: var(--font);
   cursor: pointer;
-  transition: background 0.15s, transform 0.1s, box-shadow 0.15s, opacity 0.15s;
+  transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
   position: relative;
 }
 .action-btn + .action-btn { margin-top: 7px; }
@@ -229,7 +228,7 @@ body {
 }
 .action-btn.full { margin-top: 7px; }
 
-/* ── Icon action (header button) ────────────────── */
+/* ── Icon action ────────────────────────────────── */
 .icon-action {
   width: 32px;
   height: 32px;
@@ -306,11 +305,7 @@ body {
 }
 .save-now-btn:hover { background: #257336; }
 
-/* ═══════════════════════════════════════════════════ */
-/* NEW: CHAT BOX STYLING */
-/* WHY? Create a chat-like interface for follow-up questions */
-/* Similar to ChatGPT, Claude, Gemini UI */
-/* ═══════════════════════════════════════════════════ */
+/* ── Chat Box ───────────────────────────────────── */
 .chat-box {
   display: flex;
   flex-direction: column;
@@ -321,10 +316,7 @@ body {
   overflow: hidden;
   box-shadow: var(--shadow-xs);
   max-height: 350px;
-  /* WHY max-height? So chat doesn't take up too much space */
 }
-
-/* Chat messages container */
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -332,30 +324,20 @@ body {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  /* WHY flex? Messages stack vertically with space between */
 }
 .chat-messages::-webkit-scrollbar { width: 3px; }
 .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* Individual chat message */
 .chat-message {
   display: flex;
   gap: 6px;
   animation: slideIn 0.3s ease-out;
-  /* WHY animation? Messages smoothly appear, like real chat */
 }
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Message badge (user vs assistant) */
 .chat-badge {
   font-size: 10px;
   font-weight: 700;
@@ -366,16 +348,9 @@ body {
   flex-shrink: 0;
   margin-top: 2px;
 }
-.badge-user {
-  background: var(--blue-light);
-  color: var(--blue-dark);
-}
-.badge-assistant {
-  background: var(--green-light);
-  color: var(--green);
-}
+.badge-user      { background: var(--blue-light);  color: var(--blue-dark); }
+.badge-assistant { background: var(--green-light); color: var(--green); }
 
-/* Message bubble */
 .chat-bubble {
   flex: 1;
   background: var(--surface2);
@@ -386,28 +361,16 @@ body {
   color: var(--ink2);
   word-wrap: break-word;
 }
+.chat-message.user .chat-bubble      { background: var(--blue-light);  color: var(--blue-dark); }
+.chat-message.assistant .chat-bubble { background: var(--green-light); color: var(--green); }
 
-/* Different styling for user vs AI messages */
-.chat-message.user .chat-bubble {
-  background: var(--blue-light);
-  color: var(--blue-dark);
-}
-.chat-message.assistant .chat-bubble {
-  background: var(--green-light);
-  color: var(--green);
-}
-
-/* Chat input section */
 .chat-input-section {
   display: flex;
   gap: 6px;
   padding: 8px 10px;
   border-top: 1px solid var(--border-soft);
   background: var(--surface);
-  /* WHY border-top? Visual separation from messages */
 }
-
-/* Chat input field */
 .chat-input {
   flex: 1;
   padding: 7px 10px;
@@ -420,15 +383,11 @@ body {
   outline: none;
   transition: border-color 0.15s;
 }
-.chat-input::placeholder {
-  color: var(--ink3);
-}
+.chat-input::placeholder { color: var(--ink3); }
 .chat-input:focus {
   border-color: var(--blue);
   box-shadow: 0 0 0 2px rgba(59,91,219,0.1);
 }
-
-/* Send button */
 .chat-send-btn {
   width: 28px;
   height: 28px;
@@ -442,16 +401,305 @@ body {
   justify-content: center;
   transition: background 0.15s, border-color 0.15s, color 0.15s;
   flex-shrink: 0;
-  /* WHY flex-shrink? Button doesn't shrink when input grows */
 }
-.chat-send-btn:hover {
-  background: var(--blue-light);
+.chat-send-btn:hover { background: var(--blue-light); border-color: var(--blue); color: var(--blue); }
+.chat-send-btn:active { transform: scale(0.95); }
+
+/* ── Bookmarks section ──────────────────────────── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.section-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--ink3);
+}
+.section-badge {
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 1px 8px;
+  min-width: 22px;
+  text-align: center;
+}
+.bookmarks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.bookmark-item {
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: box-shadow 0.15s, border-color 0.15s;
+}
+.bookmark-item:hover { box-shadow: var(--shadow-sm); border-color: var(--blue); }
+.bookmark-icon { font-size: 14px; flex-shrink: 0; }
+.bookmark-info { flex: 1; min-width: 0; }
+.bookmark-link { text-decoration: none; }
+.bookmark-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ink);
+  word-break: break-word;
+  cursor: pointer;
+  transition: color 0.15s;
+  display: block;
+}
+.bookmark-link:hover .bookmark-name { color: var(--blue); }
+.bookmark-meta { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+.bookmark-actions { display: flex; gap: 4px; flex-shrink: 0; }
+.bookmark-btn {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  border-radius: var(--radius-sm);
+  color: var(--ink3);
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+.bookmark-btn:hover { background: var(--surface2); color: var(--ink); }
+.bookmark-btn.delete:hover { background: var(--red-light); color: var(--red); }
+
+/* ── Modal ──────────────────────────────────────── */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 30, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  backdrop-filter: blur(2px);
+}
+.modal-box {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 320px;
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.modal-box.modal-lg {
+  max-width: 420px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+.modal-icon { font-size: 16px; }
+.modal-header h3 { flex: 1; font-size: 13px; font-weight: 700; color: var(--ink); }
+.modal-close {
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: none;
+  color: var(--ink3);
+  font-size: 13px;
+  cursor: pointer;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font);
+  transition: background 0.12s;
+}
+.modal-close:hover { background: var(--surface2); color: var(--ink); }
+.modal-desc { padding: 10px 16px; font-size: 11.5px; color: var(--ink3); line-height: 1.5; }
+.form-group { padding: 0 16px 12px; }
+.form-group label {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  color: var(--ink);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus { border-color: var(--blue); box-shadow: 0 0 0 2px rgba(59,91,219,0.1); }
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+}
+.modal-actions button { flex: 1; }
+
+/* ── Citation form & steps ──────────────────────── */
+/* FIX: steps are hidden by default; only .active is shown */
+.citation-form {
+  padding: 12px 16px;
+}
+.citation-step {
+  display: none;
+}
+.citation-step.active {
+  display: block;
+}
+
+.step-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.step-badge {
+  background: var(--blue);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 99px;
+}
+.step-header h4 {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.step-description {
+  font-size: 11px;
+  color: var(--ink3);
+  margin-bottom: 10px;
+}
+
+/* Citation navigation bar */
+.citation-nav {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-top: 1px solid var(--border-soft);
+}
+.citation-nav button { flex: 1; }
+
+.citation-fields {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+/* Citation styles grid */
+.citation-styles-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.style-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.style-option:has(input:checked) {
   border-color: var(--blue);
+  background: var(--blue-light);
+}
+.style-option input[type="radio"] { flex-shrink: 0; }
+.style-label { cursor: pointer; display: flex; flex-direction: column; }
+.style-name { font-size: 12px; font-weight: 600; color: var(--ink); }
+
+.style-search-container { margin-bottom: 8px; }
+
+.selected-style-display {
+  padding: 8px 10px;
+  background: var(--green-light);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  color: #1a6e2e;
+  margin-top: 6px;
+}
+.selected-style-label { font-weight: 600; }
+.selected-style-name  { font-weight: 700; margin-top: 2px; }
+
+/* Citation preview */
+.citation-preview-box {
+  background: var(--surface2);
+  border-radius: var(--radius-sm);
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.preview-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
   color: var(--blue);
+  margin-bottom: 6px;
 }
-.chat-send-btn:active {
-  transform: scale(0.95);
+.citation-preview {
+  padding: 10px;
+  background: var(--surface);
+  border-radius: 4px;
+  border-left: 3px solid var(--blue);
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--ink2);
+  word-break: break-word;
+  font-family: var(--mono);
+  min-height: 40px;
 }
+
+.export-options-citation {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.export-btn-citation {
+  flex: 1;
+  min-width: 60px;
+  padding: 6px 10px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+.export-btn-citation:hover { background: var(--blue-dark); }
 
 /* ── Section divider ────────────────────────────── */
 .section-divider {
@@ -496,7 +744,7 @@ textarea#quickNoteInput:focus {
   box-shadow: 0 0 0 3px rgba(59,91,219,0.1);
 }
 
-/* ── Notes section header ───────────────────────── */
+/* ── Notes section ──────────────────────────────── */
 .notes-header {
   display: flex;
   align-items: center;
@@ -520,30 +768,12 @@ textarea#quickNoteInput:focus {
   min-width: 22px;
   text-align: center;
 }
-
-/* ── Notes list ─────────────────────────────────── */
-.notes-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+.notes-list { display: flex; flex-direction: column; gap: 8px; }
 
 /* ── Empty state ────────────────────────────────── */
-.empty-state {
-  text-align: center;
-  padding: 28px 16px;
-  color: var(--ink3);
-}
-.empty-icon {
-  display: block;
-  font-size: 28px;
-  margin-bottom: 10px;
-  opacity: 0.6;
-}
-.empty-state p {
-  font-size: 11.5px;
-  line-height: 1.6;
-}
+.empty-state { text-align: center; padding: 28px 16px; color: var(--ink3); }
+.empty-icon { display: block; font-size: 28px; margin-bottom: 10px; opacity: 0.6; }
+.empty-state p { font-size: 11.5px; line-height: 1.6; }
 
 /* ── Note Card ──────────────────────────────────── */
 .note-card {
@@ -555,13 +785,8 @@ textarea#quickNoteInput:focus {
   box-shadow: var(--shadow-xs);
 }
 .note-card:hover { box-shadow: var(--shadow-sm); }
+.note-card.is-pinned { border-color: var(--amber); background: #fffcf2; }
 
-.note-card.is-pinned {
-  border-color: var(--amber);
-  background: #fffcf2;
-}
-
-/* Card top row */
 .note-card-top {
   display: flex;
   align-items: flex-start;
@@ -588,7 +813,6 @@ textarea#quickNoteInput:focus {
 }
 .note-title-btn:hover .note-title-text { color: var(--blue); }
 
-/* Card icon buttons row */
 .card-actions {
   display: flex;
   gap: 1px;
@@ -611,13 +835,13 @@ textarea#quickNoteInput:focus {
   line-height: 1;
   font-family: var(--font);
 }
-.card-icon-btn:hover { background: var(--surface2); color: var(--ink); }
-.card-icon-btn.pin-on { color: var(--amber); }
-.card-icon-btn.del-btn:hover { background: var(--red-light); color: var(--red); }
-.card-icon-btn.dl-btn:hover  { background: var(--blue-light); color: var(--blue); }
+.card-icon-btn:hover     { background: var(--surface2);   color: var(--ink); }
+/* FIX: pin-on class now actually turns the icon amber */
+.card-icon-btn.pin-on   { color: var(--amber); }
+.card-icon-btn.del-btn:hover  { background: var(--red-light);   color: var(--red); }
+.card-icon-btn.dl-btn:hover   { background: var(--blue-light);  color: var(--blue); }
 .card-icon-btn.edit-btn:hover { background: var(--green-light); color: var(--green); }
 
-/* Preview */
 .note-preview {
   padding: 0 10px 6px;
   font-size: 11px;
@@ -629,17 +853,13 @@ textarea#quickNoteInput:focus {
   overflow: hidden;
   word-break: break-word;
 }
-
-/* Expand area */
 .note-expand {
   display: none;
-  padding: 0 10px 8px;
+  padding: 8px 10px;
   font-size: 11.5px;
   color: var(--ink2);
   line-height: 1.7;
   border-top: 1px solid var(--border-soft);
-  margin-top: 4px;
-  padding-top: 8px;
   word-break: break-word;
   max-height: 220px;
   overflow-y: auto;
@@ -649,7 +869,6 @@ textarea#quickNoteInput:focus {
 .note-expand::-webkit-scrollbar { width: 3px; }
 .note-expand::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-/* Card footer */
 .note-footer {
   display: flex;
   align-items: center;
@@ -664,11 +883,10 @@ textarea#quickNoteInput:focus {
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
-.badge-summary  { background: var(--blue-light);   color: var(--blue-dark); }
-.badge-bookmark { background: var(--violet-light);  color: var(--violet); }
-.badge-manual   { background: var(--green-light);   color: var(--green); }
-.badge-conversation { background: #ffeedd;   color: #d97706; }
-/* WHY new badge? For notes saved from conversations */
+.badge-summary      { background: var(--blue-light);   color: var(--blue-dark); }
+.badge-bookmark     { background: var(--violet-light);  color: var(--violet); }
+.badge-manual       { background: var(--green-light);   color: var(--green); }
+.badge-conversation { background: #ffeedd;              color: #d97706; }
 
 .note-date { font-size: 10px; color: var(--ink3); }
 .pin-chip {
@@ -681,110 +899,6 @@ textarea#quickNoteInput:focus {
   border-radius: 4px;
   text-transform: uppercase;
   letter-spacing: 0.3px;
-}
-
-/* ── Export Modal ───────────────────────────────── */
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(10, 12, 30, 0.45);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  backdrop-filter: blur(2px);
-}
-.modal-box {
-  background: var(--surface);
-  border-radius: var(--radius-lg);
-  width: 100%;
-  max-width: 280px;
-  box-shadow: var(--shadow-md);
-  overflow: hidden;
-}
-.modal-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 16px 10px;
-  border-bottom: 1px solid var(--border);
-}
-.modal-icon { font-size: 16px; }
-.modal-header h3 {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.modal-close {
-  width: 24px;
-  height: 24px;
-  border: none;
-  background: none;
-  color: var(--ink3);
-  font-size: 13px;
-  cursor: pointer;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font);
-  transition: background 0.12s;
-}
-.modal-close:hover { background: var(--surface2); color: var(--ink); }
-.modal-desc {
-  padding: 10px 16px 12px;
-  font-size: 11.5px;
-  color: var(--ink3);
-  line-height: 1.5;
-}
-.modal-note-title {
-  display: block;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--ink);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 220px;
-  margin-top: 3px;
-}
-.export-options {
-  display: flex;
-  gap: 10px;
-  padding: 0 16px 16px;
-}
-.export-btn {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 14px 8px;
-  background: var(--surface2);
-  border: 1.5px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  font-family: var(--font);
-  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
-}
-.export-btn:hover {
-  background: var(--blue-light);
-  border-color: var(--blue);
-  box-shadow: 0 2px 8px rgba(59,91,219,0.15);
-}
-.export-icon { font-size: 22px; }
-.export-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.export-sub {
-  font-size: 9.5px;
-  color: var(--ink3);
-  text-align: center;
-  line-height: 1.3;
 }
 
 /* ── Toast ──────────────────────────────────────── */
@@ -808,10 +922,7 @@ textarea#quickNoteInput:focus {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── Tooltip ────────────────────────────────────── */
 .tooltip {
