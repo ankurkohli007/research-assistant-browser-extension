@@ -2,9 +2,7 @@
 
 const MAX_CHARS = 15000;
 
-// ═══════════════════════════════════════════════════════════════════
 // DATA
-// ═══════════════════════════════════════════════════════════════════
 let notes = [];
 let bookmarks = [];
 let sectionBookmarks = [];
@@ -19,9 +17,7 @@ let currentConversation = {
     isActive: false
 };
 
-// ═══════════════════════════════════════════════════════════════════
 // CITATION STYLES
-// ═══════════════════════════════════════════════════════════════════
 const CITATION_STYLES = {
     apa: {
         name: 'APA 7th Edition',
@@ -126,9 +122,7 @@ const CITATION_FIELDS = {
     ]
 };
 
-// ═══════════════════════════════════════════════════════════════════
 // INITIALIZATION
-// ═══════════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
     loadNotes();
     loadBookmarks();
@@ -136,11 +130,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initTooltips();
 });
 
-// ═══════════════════════════════════════════════════════════════════
+
 // EVENT BINDING
 // FIX: all getElementById calls now match the IDs that actually exist
 //      in the HTML. Inline onclick handlers have been removed from HTML.
-// ═══════════════════════════════════════════════════════════════════
 function bindAllEventListeners() {
     // Main panel buttons
     document.getElementById('summarizeButton').addEventListener('click', summarizeSelection);
@@ -168,7 +161,7 @@ function bindAllEventListeners() {
 
     // Single note export modal
     // FIX: IDs changed from 'closeNoteExport'/'noteExportHTML'/'noteExportDoc'
-    //      → 'closeNoteExportModal'/'noteExportHTML'/'noteExportDoc' to match HTML
+    //       'closeNoteExportModal'/'noteExportHTML'/'noteExportDoc' to match HTML
     document.getElementById('closeNoteExportModal').addEventListener('click', closeNoteExportModal);
     document.getElementById('noteExportHTML').addEventListener('click', () => {
         exportSingleNote(window._activeNoteId, 'html');
@@ -237,9 +230,7 @@ function bindAllEventListeners() {
     document.getElementById('notesList').addEventListener('click', handleNoteListClick);
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // EVENT DELEGATION HANDLERS
-// ═══════════════════════════════════════════════════════════════════
 function handleBookmarkListClick(e) {
     if (e.target.classList.contains('bookmark-delete-btn')) {
         deleteBookmark(e.target.dataset.id);
@@ -264,9 +255,7 @@ function handleNoteListClick(e) {
     if (e.target.closest('.pin-btn')) { togglePin(id); return; }
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // BOOKMARK SYSTEM
-// ═══════════════════════════════════════════════════════════════════
 async function openBookmarkPageModal() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const modal = document.getElementById('bookmarkModal');
@@ -425,12 +414,10 @@ function renderSectionBookmarks() {
     `).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // CITATION SYSTEM
 // FIX: replaced confusing single-step reveal with a proper wizard.
 //      Steps 1→2→3 use Next/Back; step 3 shows Generate button.
 //      Step 4 is only shown after generation succeeds.
-// ═══════════════════════════════════════════════════════════════════
 function openCitationModal() {
     document.getElementById('citationModal').classList.remove('hidden');
     renderCitationStyles();
@@ -644,9 +631,7 @@ function extractMetadata() {
     };
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // STORAGE
-// ═══════════════════════════════════════════════════════════════════
 function loadBookmarks() {
     chrome.storage.local.get(['bookmarks', 'sectionBookmarks'], (result) => {
         bookmarks = result.bookmarks || [];
@@ -671,9 +656,7 @@ function persistNotes() {
     chrome.storage.local.set({ researchNotesV2: notes });
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // SUMMARISE & CHAT
-// ═══════════════════════════════════════════════════════════════════
 async function summarizeSelection() {
     try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -691,6 +674,7 @@ async function summarizeSelection() {
         showResult('Summarising…', false);
         hideSavePromptBar();
         hideChat();
+        clearChat();
 
         currentConversation.originalSelectedText = sel.trim();
         currentConversation.messages = [];
@@ -729,6 +713,7 @@ async function summarizeFullPage() {
         showResult('📄 Extracting full page...', false);
         hideSavePromptBar();
         hideChat();
+        clearChat(); 
 
         // Extract full readable page text
         const [{ result: pageContent }] = await chrome.scripting.executeScript({
@@ -915,6 +900,10 @@ async function sendFollowUpQuestion() {
     }
 }
 
+function clearChat() {
+    document.getElementById('chatMessages').innerHTML = '';
+}
+
 function saveConversationAsNote() {
     if (!currentConversation.messages.length) { toast('⚠️ No conversation to save!'); return; }
     let txt = 'ORIGINAL TEXT:\n' + currentConversation.originalSelectedText + '\n\nSUMMARY:\n' +
@@ -926,9 +915,7 @@ function saveConversationAsNote() {
     toast('✅ Conversation saved!');
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // NOTES
-// ═══════════════════════════════════════════════════════════════════
 function saveNote({ title, content, type }) {
     const note = {
         id: 'n' + Date.now(),
@@ -1046,9 +1033,7 @@ function buildCardHTML(note) {
        </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // CHAT UI HELPERS
-// ═══════════════════════════════════════════════════════════════════
 function showChat() { document.getElementById('chatBox').classList.remove('hidden'); }
 function hideChat() { document.getElementById('chatBox').classList.add('hidden'); }
 
@@ -1078,9 +1063,7 @@ function scrollChatToBottom() {
     setTimeout(() => { chatMessages.scrollTop = chatMessages.scrollHeight; }, 100);
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // RESULT BOX HELPERS
-// ═══════════════════════════════════════════════════════════════════
 function showResult(text, isPlain) {
     const box = document.getElementById('resultBox');
     const content = document.getElementById('resultContent');
@@ -1092,9 +1075,8 @@ function showResult(text, isPlain) {
 function showSavePromptBar() { document.getElementById('savePromptBar').classList.remove('hidden'); }
 function hideSavePromptBar() { document.getElementById('savePromptBar').classList.add('hidden'); lastSummary = ''; }
 
-// ═══════════════════════════════════════════════════════════════════
+
 // EXPORT
-// ═══════════════════════════════════════════════════════════════════
 function openExportModal() {
     if (!notes.length) { toast('⚠️ No notes to export yet.'); return; }
     document.getElementById('exportModal').classList.remove('hidden');
@@ -1182,9 +1164,7 @@ function exportSingleNoteAsDoc(note) {
     toast('📝 Downloading note…');
 }
 
-// ═══════════════════════════════════════════════════════════════════
 // UTILITIES
-// ═══════════════════════════════════════════════════════════════════
 function toast(msg) {
     const el = document.getElementById('toast');
     el.textContent = msg;
