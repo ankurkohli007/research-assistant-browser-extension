@@ -340,16 +340,58 @@ function renderBookmarks() {
 }
 
 // Section bookmarks
+// async function openBookmarkHeadingModal() {
+//     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+//     const [{ result: selectedText }] = await chrome.scripting.executeScript({
+//         target: { tabId: tab.id },
+//         function: () => window.getSelection().toString() || ''
+//     });
+//     const modal = document.getElementById('bookmarkHeadingModal');
+//     modal.dataset.pageUrl = tab.url;
+//     const input = document.getElementById('headingName');
+//     input.value = selectedText || '';
+//     input.focus();
+//     modal.classList.remove('hidden');
+// }
+
 async function openBookmarkHeadingModal() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    const [{ result: selectedText }] = await chrome.scripting.executeScript({
+    const [{ result }] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        function: () => window.getSelection().toString() || ''
+        function: () => {
+            const selection = window.getSelection();
+            const selectedText = selection.toString() || '';
+
+            let fragment = '';
+            let node = selection.anchorNode;
+
+            while (node && node !== document.body) {
+                if (node.nodeType === 1) {
+                    if (/^H[1-6]$/.test(node.tagName) && node.id) {
+                        fragment = node.id;
+                        break;
+                    }
+                    let sibling = node.previousElementSibling;
+                    while (sibling) {
+                        if (/^H[1-6]$/.test(sibling.tagName) && sibling.id) {
+                            fragment = sibling.id;
+                            break;
+                        }
+                        sibling = sibling.previousElementSibling;
+                    }
+                    if (fragment) break;
+                }
+                node = node.parentNode;
+            }
+
+            return { selectedText, fragment };
+        }
     });
+
     const modal = document.getElementById('bookmarkHeadingModal');
-    modal.dataset.pageUrl = tab.url;
+    modal.dataset.pageUrl = result.fragment ? `${tab.url}#${result.fragment}` : tab.url;
     const input = document.getElementById('headingName');
-    input.value = selectedText || '';
+    input.value = result.selectedText || '';
     input.focus();
     modal.classList.remove('hidden');
 }
