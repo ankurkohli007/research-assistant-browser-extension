@@ -894,6 +894,7 @@ function smartTrim(text, limit = MAX_CHARS) {
 function saveSummaryAsNote() {
     if (!lastSummary) return;
     saveNote({ title: autoTitle(lastSummary), content: lastSummary, type: 'summary' });
+    lastSummary = '';
     hideSavePromptBar();
     toast('✅ Summary saved!');
 }
@@ -947,7 +948,7 @@ function clearChat() {
 }
 
 function saveConversationAsNote() {
-    if (!currentConversation.messages.length) { toast('⚠️ No conversation to save!'); return; }
+    if (!currentConversation.isActive) { toast('⚠️ No conversation to save!'); return; }
     let txt = 'ORIGINAL TEXT:\n' + currentConversation.originalSelectedText + '\n\nSUMMARY:\n' +
         currentConversation.currentSummary + '\n\nCONVERSATION:\n' + '─'.repeat(50) + '\n';
     currentConversation.messages.forEach(msg => {
@@ -1115,7 +1116,7 @@ function showResult(text, isPlain) {
 }
 
 function showSavePromptBar() { document.getElementById('savePromptBar').classList.remove('hidden'); }
-function hideSavePromptBar() { document.getElementById('savePromptBar').classList.add('hidden'); lastSummary = ''; }
+function hideSavePromptBar() { document.getElementById('savePromptBar').classList.add('hidden'); }
 
 
 // EXPORT
