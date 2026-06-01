@@ -7,7 +7,6 @@
 ## 📌 Table of Contents
 
 - [Overview](#overview)
-- [Live Demo](#live-demo)
 - [Key Features](#key-features)
 - [Tech Stack](#tech-stack)
 - [Architecture](#architecture)
@@ -27,12 +26,6 @@
 The backend is a reactive REST API built with **Spring Boot + WebFlux**, integrating **Google Gemini AI** for natural language understanding. The frontend is a polished Chrome Side Panel Extension built in JavaScript with a premium SaaS grade UI.
 
 This project demonstrates end-to-end ownership: UI/UX design, Chrome Extension APIs, reactive backend architecture, AI integration, and production quality code organisation.
-
----
-
-## Live Demo
-
-> 📹 Demo video attached, see in action: text summarisation, multi turn follow up chat, citation builder, section deep linking, and workspace export.
 
 ---
 
