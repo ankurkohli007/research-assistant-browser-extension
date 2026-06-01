@@ -1,4 +1,4 @@
-# 🔬 Research Assistant Pro — AI-Powered Browser Extension with Spring Boot & Gemini AI
+# 🔬 Research Assistant Pro: AI-Powered Browser Extension with Spring Boot & Gemini AI
 
 > **Summarise. Cite. Bookmark. Organise.** A production-grade, full-stack AI research tool built as a Chrome Extension with a reactive Spring Boot backend powered by Google Gemini — designed to supercharge how developers, researchers, and knowledge workers consume information on the web.
 
