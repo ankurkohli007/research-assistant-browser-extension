@@ -253,7 +253,7 @@ Instead of saving just `tab.url`, the extension injects a script into the page t
 
 ## Author
 
-Built with 💻 by **[ANKUR KOHLI]**
+Built with 💻 by **ANKUR KOHLI** <br>
 Software Engineer | AI-Integrated Systems
 
 ---
