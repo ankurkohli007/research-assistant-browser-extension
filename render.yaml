@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: research-assistant-backend
+    runtime: java
+    rootDir: research-assistant
+    buildCommand: ./mvnw clean package -DskipTests
+    startCommand: java -jar target/research-assistant-0.0.1-SNAPSHOT.jar
+    envVars:
+      - key: GEMINI_KEY
+        sync: false
