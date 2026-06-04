@@ -491,6 +491,7 @@ body {
   line-height: 1.5;
   word-wrap: break-word;
   box-shadow: var(--shadow-xs);
+  white-space: pre-wrap;
 }
 
 .chat-message.user .chat-bubble { 

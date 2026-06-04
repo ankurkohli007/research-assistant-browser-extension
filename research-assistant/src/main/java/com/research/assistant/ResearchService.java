@@ -77,7 +77,7 @@ public class ResearchService {
             // WHY EXACTLY? To train AI to be precise, not approximate
         } else {
             // Default: provide concise summary
-            prompt.append("Provide a clear and concise summary in 100-150 words. ");
+            prompt.append("Provide a clear and concise summary in 30-50 words. ");
         }
 
         prompt.append("Make it professional and informative.\n\n");
@@ -104,24 +104,62 @@ public class ResearchService {
     // 2. The summary (for reference)
     // 3. Previous Q&A (for conversation flow)
     // 4. The current question (to answer)
+//    private String buildFollowUpPrompt(ResearchRequest request) {
+//        StringBuilder prompt = new StringBuilder();
+//
+//        prompt.append("You are an intelligent research assistant helping analyze content.\n\n");
+//
+//        // Context section: Remember what we're talking about
+//        prompt.append("=== ORIGINAL CONTENT (for context) ===\n");
+//        if (request.getOriginalSelectedText() != null) {
+//            prompt.append(request.getOriginalSelectedText());
+//        }
+//        prompt.append("\n\n");
+//
+//        // Summary section: What we already know
+//        prompt.append("=== SUMMARY (what we discussed) ===\n");
+//        prompt.append(request.getContent());  // This is usually the summary from previous step
+//        prompt.append("\n\n");
+//
+//        // Conversation history section: Reference previous Q&A
+//        if (request.getConversationHistory() != null && !request.getConversationHistory().isEmpty()) {
+//            prompt.append("=== PREVIOUS CONVERSATION ===\n");
+//            for (ResearchRequest.ConversationMessage msg : request.getConversationHistory()) {
+//                if ("user".equals(msg.getRole())) {
+//                    prompt.append("User asked: ").append(msg.getContent()).append("\n");
+//                } else {
+//                    prompt.append("You answered: ").append(msg.getContent()).append("\n");
+//                }
+//            }
+//            prompt.append("\n");
+//        }
+//
+//        // Current question
+//        prompt.append("=== NEW QUESTION ===\n");
+//        prompt.append("User is asking: ").append(request.getQuestion()).append("\n\n");
+//        prompt.append("Please answer based on the context above. Be specific and reference the content when relevant.");
+//
+//        return prompt.toString();
+//    }
+
     private String buildFollowUpPrompt(ResearchRequest request) {
         StringBuilder prompt = new StringBuilder();
 
         prompt.append("You are an intelligent research assistant helping analyze content.\n\n");
 
-        // Context section: Remember what we're talking about
+        // Context section
         prompt.append("=== ORIGINAL CONTENT (for context) ===\n");
         if (request.getOriginalSelectedText() != null) {
             prompt.append(request.getOriginalSelectedText());
         }
         prompt.append("\n\n");
 
-        // Summary section: What we already know
+        // Summary section
         prompt.append("=== SUMMARY (what we discussed) ===\n");
-        prompt.append(request.getContent());  // This is usually the summary from previous step
+        prompt.append(request.getContent());
         prompt.append("\n\n");
 
-        // Conversation history section: Reference previous Q&A
+        // Conversation history
         if (request.getConversationHistory() != null && !request.getConversationHistory().isEmpty()) {
             prompt.append("=== PREVIOUS CONVERSATION ===\n");
             for (ResearchRequest.ConversationMessage msg : request.getConversationHistory()) {
@@ -134,9 +172,77 @@ public class ResearchService {
             prompt.append("\n");
         }
 
+        // NEW SECTION: Detect and handle format requests
+        String question = request.getQuestion().toLowerCase();
+
+//        if (question.contains("bullet") || question.contains("point")) {
+//            // Extract number if specified (e.g., "3 bullet points" → 3)
+//            int bulletCount = 5; // default
+//            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(\\d+)\\s*(?:bullet|point)");
+//            java.util.regex.Matcher matcher = pattern.matcher(question);
+//            if (matcher.find()) {
+//                bulletCount = Integer.parseInt(matcher.group(1));
+//            }
+////            prompt.append("=== FORMAT INSTRUCTION ===\n");
+////            prompt.append("IMPORTANT: Format your answer as EXACTLY ").append(bulletCount).append(" bullet points.\n");
+////            prompt.append("Use this format:\n");
+////            prompt.append("• Point 1\n");
+////            prompt.append("• Point 2\n");
+////            prompt.append("• Point 3\n");
+////            prompt.append("(etc.)\n\n");
+//
+//            prompt.append("=== FORMAT INSTRUCTION ===\n");
+//            prompt.append("IMPORTANT: Format your answer as EXACTLY ").append(bulletCount).append(" bullet points.\n");
+//            prompt.append("EACH bullet point MUST start on a NEW line.\n");
+//            prompt.append("Use EXACTLY this format with line breaks:\n\n");
+//            prompt.append("• Point 1\n\n");
+//            prompt.append("• Point 2\n\n");
+//            prompt.append("• Point 3\n\n");
+//            prompt.append("Make sure each bullet point has a blank line after it.\n");
+//        }
+        if (question.contains("bullet") || question.contains("point")) {
+            int bulletCount = 5;
+
+            java.util.regex.Pattern pattern =
+                    java.util.regex.Pattern.compile("(\\d+)\\s*(?:bullet|point)");
+            java.util.regex.Matcher matcher = pattern.matcher(question);
+
+            if (matcher.find()) {
+                bulletCount = Integer.parseInt(matcher.group(1));
+            }
+
+            prompt.append("=== FORMAT INSTRUCTION ===\n");
+            prompt.append("Return EXACTLY ").append(bulletCount).append(" bullet points.\n\n");
+
+            prompt.append("OUTPUT FORMAT:\n\n");
+            prompt.append("• First bullet point\n\n");
+            prompt.append("• Second bullet point\n\n");
+            prompt.append("• Third bullet point\n\n");
+
+            prompt.append("MANDATORY RULES:\n");
+            prompt.append("1. Each bullet MUST start with the bullet character '•'\n");
+            prompt.append("2. After EVERY bullet, output TWO newline characters (\\n\\n)\n");
+            prompt.append("3. Never place two bullet points on the same line\n");
+            prompt.append("4. Do not use paragraphs\n");
+            prompt.append("5. Output ONLY the bullet points and nothing else\n");
+            prompt.append("6. Preserve blank lines between bullets\n\n");
+        }
+        else if (question.contains("table") || question.contains("comparison")) {
+            prompt.append("=== FORMAT INSTRUCTION ===\n");
+            prompt.append("IMPORTANT: Format your answer as a table with clear columns and rows.\n\n");
+        }
+        else if (question.contains("step") || question.contains("process")) {
+            prompt.append("=== FORMAT INSTRUCTION ===\n");
+            prompt.append("IMPORTANT: Format your answer as numbered steps.\n");
+            prompt.append("Use this format:\n");
+            prompt.append("1. First step\n");
+            prompt.append("2. Second step\n");
+            prompt.append("3. Third step\n\n");
+        }
+
         // Current question
-        prompt.append("=== NEW QUESTION ===\n");
-        prompt.append("User is asking: ").append(request.getQuestion()).append("\n\n");
+        prompt.append("=== USER QUESTION ===\n");
+        prompt.append(request.getQuestion()).append("\n\n");
         prompt.append("Please answer based on the context above. Be specific and reference the content when relevant.");
 
         return prompt.toString();
@@ -188,22 +294,57 @@ public class ResearchService {
     // ═══════════════════════════════════════════════════════════════════
     // RESPONSE PARSING - Extract answer from Gemini's response
     // ═══════════════════════════════════════════════════════════════════
+//    private String extractTextFromResponse(String response) {
+//        // WHY this method?
+//        // Gemini returns complex JSON, we just need the text answer
+//        try {
+//            GeminiResponse geminiResponse = objectMapper.readValue(response, GeminiResponse.class);
+//            if (geminiResponse.getCandidates() != null && !geminiResponse.getCandidates().isEmpty()) {
+//                GeminiResponse.Candidate firstCandidate = geminiResponse.getCandidates().get(0);
+//                if (firstCandidate.getContent() != null &&
+//                        firstCandidate.getContent().getParts() != null &&
+//                        !firstCandidate.getContent().getParts().isEmpty()) {
+//                    return firstCandidate.getContent().getParts().get(0).getText();
+//                }
+//            }
+//            return "No content found in response";
+//        } catch (Exception e) {
+//            return "Error Parsing: " + e.getMessage();
+//        }
+//    }
     private String extractTextFromResponse(String response) {
-        // WHY this method?
-        // Gemini returns complex JSON, we just need the text answer
         try {
             GeminiResponse geminiResponse = objectMapper.readValue(response, GeminiResponse.class);
-            if (geminiResponse.getCandidates() != null && !geminiResponse.getCandidates().isEmpty()) {
-                GeminiResponse.Candidate firstCandidate = geminiResponse.getCandidates().get(0);
-                if (firstCandidate.getContent() != null &&
-                        firstCandidate.getContent().getParts() != null &&
-                        !firstCandidate.getContent().getParts().isEmpty()) {
-                    return firstCandidate.getContent().getParts().get(0).getText();
-                }
+
+            if (geminiResponse.getCandidates() != null &&
+                    !geminiResponse.getCandidates().isEmpty()) {
+
+                String text = geminiResponse.getCandidates()
+                        .get(0)
+                        .getContent()
+                        .getParts()
+                        .get(0)
+                        .getText();
+
+                return formatBullets(text);
             }
+
             return "No content found in response";
+
         } catch (Exception e) {
             return "Error Parsing: " + e.getMessage();
         }
+    }
+
+    private String formatBullets(String text) {
+
+        if (!text.contains("•")) {
+            return text;
+        }
+
+        // Insert blank line before every bullet except first
+        text = text.replaceAll("\\s*•\\s*", "\n\n• ");
+
+        return text.trim();
     }
 }
