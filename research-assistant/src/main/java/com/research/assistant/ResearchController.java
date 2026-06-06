@@ -15,20 +15,18 @@ public class ResearchController {
 
     private final ResearchService researchService;
 
-    // ═══════════════════════════════════════════════════════════════════
     // SINGLE ENDPOINT - Handles all operations
-    // WHY? Cleaner architecture, easier to maintain
-    // ═══════════════════════════════════════════════════════════════════
+    // Reason - Cleaner architecture, easier to maintain
     @PostMapping("/process")
     public Mono<String> processContent(@RequestBody ResearchRequest request) {
 
         // STEP 1: Extract word count from user's input
-        // WHY? User might say "Summarize in 75 words"
+        // Reason - User might say "Summarize in 75 words"
         // We need to parse "75" from the sentence
         extractWordLimitFromContent(request);
 
         // STEP 2: Sanitize operation
-        // WHY? Make sure operation is valid before sending to service
+        // Reason - Make sure operation is valid before sending to service
         String operation = request.getOperation() == null ? "summarize" : request.getOperation().toLowerCase();
         request.setOperation(operation);
 
@@ -36,9 +34,7 @@ public class ResearchController {
         return researchService.processContent(request);
     }
 
-    // ═══════════════════════════════════════════════════════════════════
     // HELPER: Extract word count from natural language
-    // ═══════════════════════════════════════════════════════════════════
     private void extractWordLimitFromContent(ResearchRequest request) {
 
         // WHY this regex?
@@ -64,7 +60,7 @@ public class ResearchController {
                 request.setWordLimit(wordLimit);
 
                 // Remove the word count phrase from content
-                // WHY? So AI doesn't get confused by seeing "100 words" in the text itself
+                // Reason - So AI doesn't get confused by seeing "100 words" in the text itself
                 String cleanedContent = content.replaceAll("(?i)(?:in|exactly|around|about)?\\s*\\d+\\s*(?:word|words)", "").trim();
                 request.setContent(cleanedContent);
 
@@ -75,10 +71,7 @@ public class ResearchController {
         }
     }
 
-    // ═══════════════════════════════════════════════════════════════════
     // FUTURE ENDPOINT: Handle multi-turn conversation in one request
-    // (Optional - for advanced use cases)
-    // ═══════════════════════════════════════════════════════════════════
     @PostMapping("/chat")
     public Mono<String> chat(@RequestBody ResearchRequest request) {
         // This endpoint specifically handles follow-up questions
