@@ -263,6 +263,7 @@ async function openBookmarkPageModal() {
     modal.dataset.title = tab.title;
     document.getElementById('bookmarkName').value = '';
     modal.classList.remove('hidden');
+    console.log("PAGE URL:", tab.url);
 }
 
 function closeBookmarkPageModal() {
@@ -275,7 +276,7 @@ async function confirmBookmark() {
     const bookmark = {
         id: 'bm' + Date.now(),
         name: customName || modal.dataset.title,
-        url: modal.dataset.url,
+        url: modal.dataset.url.split('#')[0], // strip any fragment
         createdAt: new Date().toISOString(),
         visitCount: 0,
         lastVisited: null
@@ -339,49 +340,46 @@ function renderBookmarks() {
     });
 }
 
-// Section bookmarks
-// async function openBookmarkHeadingModal() {
-//     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-//     const [{ result: selectedText }] = await chrome.scripting.executeScript({
-//         target: { tabId: tab.id },
-//         function: () => window.getSelection().toString() || ''
-//     });
-//     const modal = document.getElementById('bookmarkHeadingModal');
-//     modal.dataset.pageUrl = tab.url;
-//     const input = document.getElementById('headingName');
-//     input.value = selectedText || '';
-//     input.focus();
-//     modal.classList.remove('hidden');
-// }
-
+// Section bookmarks are bookmarks to specific headings/sections within a page, using URL fragments.
 async function openBookmarkHeadingModal() {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     const [{ result }] = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        function: () => {
+        func: () => {
             const selection = window.getSelection();
-            const selectedText = selection.toString() || '';
+            const selectedText = selection.toString().trim();
+
+            const anchorNode = selection.anchorNode;
+            if (!anchorNode) return { selectedText, fragment: '' };
+
+            const anchorEl = anchorNode.nodeType === 1
+                ? anchorNode
+                : anchorNode.parentElement;
 
             let fragment = '';
-            let node = selection.anchorNode;
 
-            while (node && node !== document.body) {
-                if (node.nodeType === 1) {
-                    if (/^H[1-6]$/.test(node.tagName) && node.id) {
-                        fragment = node.id;
+            // First: check if selection is directly inside a heading
+            let el = anchorEl;
+            while (el && el !== document.body) {
+                if (/^H[1-6]$/.test(el.tagName) && el.id) {
+                    fragment = el.id;
+                    break;
+                }
+                el = el.parentElement;
+            }
+
+            // Second: if not inside a heading, find the closest preceding heading
+            if (!fragment) {
+                const allHeadings = Array.from(
+                    document.querySelectorAll('h1[id],h2[id],h3[id],h4[id],h5[id],h6[id]')
+                );
+                for (let i = allHeadings.length - 1; i >= 0; i--) {
+                    const pos = allHeadings[i].compareDocumentPosition(anchorEl);
+                    if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {
+                        fragment = allHeadings[i].id;
                         break;
                     }
-                    let sibling = node.previousElementSibling;
-                    while (sibling) {
-                        if (/^H[1-6]$/.test(sibling.tagName) && sibling.id) {
-                            fragment = sibling.id;
-                            break;
-                        }
-                        sibling = sibling.previousElementSibling;
-                    }
-                    if (fragment) break;
                 }
-                node = node.parentNode;
             }
 
             return { selectedText, fragment };
@@ -389,7 +387,11 @@ async function openBookmarkHeadingModal() {
     });
 
     const modal = document.getElementById('bookmarkHeadingModal');
-    modal.dataset.pageUrl = result.fragment ? `${tab.url}#${result.fragment}` : tab.url;
+    const baseUrl = tab.url.split('#')[0];
+    modal.dataset.pageUrl = result.fragment
+        ? `${baseUrl}#${result.fragment}`
+        : baseUrl;
+
     const input = document.getElementById('headingName');
     input.value = result.selectedText || '';
     input.focus();
@@ -457,9 +459,6 @@ function renderSectionBookmarks() {
 }
 
 // CITATION SYSTEM
-// FIX: replaced confusing single-step reveal with a proper wizard.
-//      Steps 1→2→3 use Next/Back; step 3 shows Generate button.
-//      Step 4 is only shown after generation succeeds.
 function openCitationModal() {
     document.getElementById('citationModal').classList.remove('hidden');
     renderCitationStyles();
@@ -722,7 +721,7 @@ async function summarizeSelection() {
         currentConversation.messages = [];
         currentConversation.isActive = false;
 
-        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
+        const res = await fetch('http://localhost:8080/api/research/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: sel.trim(), operation: 'summarize' })
@@ -745,38 +744,40 @@ async function summarizeSelection() {
     }
 }
 
+
 async function summarizeFullPage() {
     try {
-        const [tab] = await chrome.tabs.query({
-            active: true,
-            currentWindow: true
-        });
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
 
         showResult('📄 Extracting full page...', false);
         hideSavePromptBar();
         hideChat();
-        clearChat(); 
+        clearChat();
 
-        // Extract full readable page text
         const [{ result: pageContent }] = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            function: extractFullPageContent
+            func: () => {
+                const article =
+                    document.querySelector('article') ||
+                    document.querySelector('main') ||
+                    document.body;
+
+                let text = article.innerText || article.textContent || '';
+
+                text = text
+                    .replace(/\s+/g, ' ')
+                    .replace(/\n+/g, '\n')
+                    .trim();
+
+                return text;
+            }
         });
 
-        if (!pageContent || pageContent.length < 100) {
-    throw new Error('Could not extract enough readable content.');
-}
-
-        // Optional protection against huge pages
-        // const MAX_CHARS = 15000;
-
-        // const trimmedContent =
-        //     pageContent.length > MAX_CHARS
-        //         ? pageContent.slice(0, MAX_CHARS)
-        //         : pageContent;
+        if (!pageContent || typeof pageContent !== 'string' || pageContent.length < 100) {
+            throw new Error('Could not extract enough readable content.');
+        }
 
         const trimmedContent = smartTrim(pageContent);
-
 
         currentConversation.originalSelectedText = trimmedContent;
         currentConversation.messages = [];
@@ -784,31 +785,24 @@ async function summarizeFullPage() {
 
         showResult('📄 Summarizing full page...', false);
 
-        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
+        const res = await fetch('http://localhost:8080/api/research/process', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 content: trimmedContent,
                 operation: 'summarize'
             })
         });
 
-        if (!res.ok) {
-            throw new Error('API error ' + res.status);
-        }
+        if (!res.ok) throw new Error('API error ' + res.status);
 
         lastSummary = (await res.text()).trim();
-
         currentConversation.currentSummary = lastSummary;
         currentConversation.isActive = true;
 
         showResult(lastSummary, true);
-
         showSavePromptBar();
         showChat();
-
         toast('✅ Full page summary ready!');
 
     } catch (err) {
@@ -818,78 +812,23 @@ async function summarizeFullPage() {
     }
 }
 
-// function extractFullPageContent() {
-
-//     // Clone the document body
-//     const clonedBody = document.body.cloneNode(true);
-
-//     // Remove unwanted elements ONLY from clone
-//     const unwanted = clonedBody.querySelectorAll(
-//         'script, style, noscript, iframe, nav, footer, header, aside'
-//     );
-
-//     unwanted.forEach(el => el.remove());
-
-//     // Prefer article/main content
-//     const article =
-//         clonedBody.querySelector('article') ||
-//         clonedBody.querySelector('main') ||
-//         clonedBody;
-
-//     let text = article.innerText || article.textContent || '';
-
-//     // Clean text
-//     text = text
-//         .replace(/\s+/g, ' ')
-//         .replace(/\n+/g, '\n')
-//         .trim();
-
-//     return text;
-// }
-
-function extractFullPageContent() {
-
-    // Prefer article/main content directly
-    const article =
-        document.querySelector('article') ||
-        document.querySelector('main') ||
-        document.body;
-
-    // Create clean text WITHOUT modifying page
-    let text = article.innerText || article.textContent || '';
-
-    // Cleanup
-    text = text
-        .replace(/\s+/g, ' ')
-        .replace(/\n+/g, '\n')
-        .trim();
-
-    return text;
-
-}
-
 function smartTrim(text, limit = MAX_CHARS) {
-
-    if (text.length <= limit) {
-        return text;
-    }
+    if (typeof text !== 'string') return '';
+    if (text.length <= limit) return text;
 
     const trimmed = text.slice(0, limit);
-
     const lastSentence = Math.max(
         trimmed.lastIndexOf('.'),
         trimmed.lastIndexOf('!'),
         trimmed.lastIndexOf('?')
     );
 
-    // Avoid cutting too early
     if (lastSentence > limit * 0.7) {
         return trimmed.slice(0, lastSentence + 1);
     }
 
     return trimmed;
 }
-
 
 function saveSummaryAsNote() {
     if (!lastSummary) return;
@@ -920,7 +859,7 @@ async function sendFollowUpQuestion() {
     addMessageToChat('assistant', '⏳ Thinking…');
 
     try {
-        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
+        const res = await fetch('http://localhost:8080/api/research/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
