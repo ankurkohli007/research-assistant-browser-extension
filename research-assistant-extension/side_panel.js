@@ -721,7 +721,7 @@ async function summarizeSelection() {
         currentConversation.messages = [];
         currentConversation.isActive = false;
 
-        const res = await fetch('http://localhost:8080/api/research/process', {
+        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ content: sel.trim(), operation: 'summarize' })
@@ -785,7 +785,7 @@ async function summarizeFullPage() {
 
         showResult('📄 Summarizing full page...', false);
 
-        const res = await fetch('http://localhost:8080/api/research/process', {
+        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -859,7 +859,7 @@ async function sendFollowUpQuestion() {
     addMessageToChat('assistant', '⏳ Thinking…');
 
     try {
-        const res = await fetch('http://localhost:8080/api/research/process', {
+        const res = await fetch('https://research-assistant-browser-extension-1.onrender.com/api/research/process', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
