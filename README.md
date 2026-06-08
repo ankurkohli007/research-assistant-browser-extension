@@ -29,6 +29,20 @@ This project demonstrates end-to-end ownership: UI/UX design, Chrome Extension A
 
 ---
 
+## Live Demo
+ 
+> 📹 Demo video attached — see in action: text summarisation, multi-turn follow-up chat, citation builder, section deep-linking, and workspace export.
+
+<!-- <p align="center">
+  <img width="900" height="600" src="https://github.com/ankurkohli007/Experimental_Robotics_Laboratory_Assignment_I/blob/b551b080ca777d71fb59df6c00a52037cc033372/final_outcome.gif">
+</p>
+
+<p align="center">
+    <em>Final Output</em>
+</p>  -->
+ 
+---
+
 ## Key Features
 
 ### 🤖 AI Summarisation Engine
